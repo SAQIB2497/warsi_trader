@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Category = () => {
   // Category Data
   const categories = [
@@ -13,9 +15,12 @@ const Category = () => {
       {/* Heading */}
       <div className="flex justify-between px-10">
         <h2 className="text-xl font-semibold">Shop by Category</h2>
-        <button className="text-blue-600 hover:underline cursor-pointer">
+        <Link
+          to="/alltools"
+          className="text-blue-600 hover:underline cursor-pointer"
+        >
           View All
-        </button>
+        </Link>
       </div>
 
       {/* Categories Grid */}

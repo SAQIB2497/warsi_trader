@@ -1,6 +1,12 @@
+import { useEffect } from "react";
 import Tools from "../components/Tools";
 
 const AllTools = () => {
+
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const allToolsData = [
     {
       id: 1,

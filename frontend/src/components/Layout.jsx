@@ -3,13 +3,13 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ContactUs from "../components/ContactUs";
 
-
 const Layout = () => {
   return (
     <div>
       <Navbar />
-      <Outlet /> {/* This renders the current page content */}
-      <ContactUs/>
+      <Outlet />{" "}
+      {/* This ensures the nested pages (Home, AllTools) are rendered */}
+      <ContactUs />
       <Footer />
     </div>
   );
