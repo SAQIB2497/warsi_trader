@@ -1,37 +1,14 @@
 import { CiSearch } from "react-icons/ci";
 import { useState } from "react";
 import { HiOutlineMenu, HiX } from "react-icons/hi"; // Mobile menu icons
-import { IoIosArrowDown } from "react-icons/io"; // Dropdown icon
+import { Link as ScrollLink } from "react-scroll";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
-  const [lightsDropdownOpen, setLightsDropdownOpen] = useState(false);
-
-  // Custom dropdown items for Tools
-  const toolsItems = [
-    "All tools",
-    "Hand Tools",
-    "Power Tools",
-    "Tool Sets",
-    "Measuring Tools",
-    "Cutting Tools",
-    "Gardening Tools",
-  ];
-
-  // Custom dropdown items for Lights
-  const lightsItems = [
-    "All Lights",
-    "LED Lights",
-    "Ceiling Lights",
-    "Outdoor Lights",
-    "Decorative Lights",
-    "Emergency Lights",
-    "Solar Lights",
-  ];
 
   return (
-    <nav className="bg-gray-100 shadow-md">
+    <nav className="bg-gray-100 shadow-md sticky top-0 z-50">
       {/* Shipping Banner */}
       <div className="bg-gray-900 text-white text-center py-2 text-xs sm:text-sm z-40">
         Free shipping across Pakistan for orders over Rs 4999
@@ -49,17 +26,23 @@ const Navbar = () => {
 
         {/* Logo & Brand Name */}
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden border border-gray-300 shadow-sm">
+          <Link
+            to={"/"}
+            className="h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden border border-gray-300 shadow-sm"
+          >
             <img
               src="/public/Logo.jpg"
               alt="Logo"
               className="h-full w-full object-cover"
             />
-          </div>
+          </Link>
           <div className="text-gray-800">
-            <div className="text-lg sm:text-xl font-bold tracking-wide">
+            <Link
+              to={"/"}
+              className="text-lg sm:text-xl font-bold tracking-wide"
+            >
               Warsi <span className="text-blue-600">Trader</span>
-            </div>
+            </Link>
             <div className="text-xs sm:text-sm text-gray-500">
               Electric & Hardware
             </div>
@@ -107,87 +90,36 @@ const Navbar = () => {
 
       {/* Navigation Links */}
       <div className="hidden sm:flex justify-center space-x-8 text-gray-700 font-medium py-2 border-t">
-        {/* Tools Dropdown */}
-        <div
-          className="cursor-pointer hover:text-blue-600 transition relative flex items-center gap-1"
-          onMouseEnter={() => setToolsDropdownOpen(true)}
-          onMouseLeave={() => setToolsDropdownOpen(false)}
+        {/* Link to All Tools */}
+        <Link
+          to="/alltools"
+          className="cursor-pointer hover:text-blue-600 transition"
         >
-          Tools <IoIosArrowDown className="text-sm" />
-          {toolsDropdownOpen && (
-            <div className="absolute top-full left-0 bg-white shadow-lg rounded-lg mt-2 py-2 w-48 z-50">
-              {toolsItems.map((item, index) => (
-                <div key={index} className="px-4 py-2 hover:bg-gray-100">
-                  {item}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Lights Dropdown */}
-        <div
-          className="cursor-pointer hover:text-blue-600 transition relative flex items-center gap-1"
-          onMouseEnter={() => setLightsDropdownOpen(true)}
-          onMouseLeave={() => setLightsDropdownOpen(false)}
-        >
-          Lights <IoIosArrowDown className="text-sm" />
-          {lightsDropdownOpen && (
-            <div className="absolute top-full left-0 bg-white shadow-lg rounded-lg mt-2 py-2 w-48 z-50">
-              {lightsItems.map((item, index) => (
-                <div key={index} className="px-4 py-2 hover:bg-gray-100">
-                  {item}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+          All Tools
+        </Link>
 
         <div className="cursor-pointer hover:text-blue-600 transition">
           Sale
         </div>
-        <div className="cursor-pointer hover:text-blue-600 transition">
+        <ScrollLink
+          to="contact"
+          smooth={true}
+          duration={1000}
+          className="cursor-pointer hover:text-blue-600 transition"
+        >
           Contact Us
-        </div>
+        </ScrollLink>
       </div>
 
       {/* Mobile Navigation Menu */}
       {menuOpen && (
         <div className="sm:hidden flex flex-col items-center py-4 border-t bg-gray-50">
-          <div
+          <Link
+            to="/alltools"
             className="py-2 cursor-pointer hover:text-blue-600 transition"
-            onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
           >
-            <div className="flex items-center gap-1">
-              Tools <IoIosArrowDown className="text-sm" />
-            </div>
-            {toolsDropdownOpen && (
-              <div className="pl-4">
-                {toolsItems.map((item, index) => (
-                  <div key={index} className="py-1">
-                    {item}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div
-            className="py-2 cursor-pointer hover:text-blue-600 transition"
-            onClick={() => setLightsDropdownOpen(!lightsDropdownOpen)}
-          >
-            <div className="flex items-center gap-1">
-              Lights <IoIosArrowDown className="text-sm" />
-            </div>
-            {lightsDropdownOpen && (
-              <div className="pl-4">
-                {lightsItems.map((item, index) => (
-                  <div key={index} className="py-1">
-                    {item}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+            All Tools
+          </Link>
           <div className="py-2 cursor-pointer hover:text-blue-600 transition">
             Sale
           </div>

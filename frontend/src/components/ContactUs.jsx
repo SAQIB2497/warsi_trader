@@ -1,8 +1,10 @@
+import React from "react";
+
 const ContactUs = () => {
   return (
-    <div className="mt-10 px-6 md:px-10">
+    <div id="contact" className="mt-10 px-6 md:px-10">
+      {/* Added id="contact" */}
       <h2 className="text-2xl font-bold text-center mb-6">Contact Us</h2>
-
       <div className="flex flex-col md:flex-row items-center bg-white p-6 border border-gray-200 rounded-lg shadow-lg gap-6">
         {/* Left Side - Contact Info */}
         <div className="w-full md:w-1/2 text-center md:text-left space-y-4">
@@ -14,7 +16,9 @@ const ContactUs = () => {
           <p className="text-gray-800 font-medium">
             📍 Address: Gurrah Jattan, Kharian, Punjab, Pakistan
           </p>
-          <p className="text-gray-800 font-medium">📞 Phone: +92 334 4012006 </p>
+          <p className="text-gray-800 font-medium">
+            📞 Phone: +92 334 4012006{" "}
+          </p>
           <p className="text-gray-800 font-medium">
             ✉ Email: shahzadaqeel008@gmail.com
           </p>
