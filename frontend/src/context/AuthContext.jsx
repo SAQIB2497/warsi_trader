@@ -5,19 +5,22 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Added to prevent unnecessary renders
 
   // Check if user is logged in when the app loads
   useEffect(() => {
     const checkUser = async () => {
       try {
         const res = await axios.get("http://localhost:5001/api/users/current", {
-          withCredentials: true, // Ensure cookies are sent
+          withCredentials: true,
         });
         console.log("User found in session:", res.data);
-        setUser(res.data.user); // Ensure this matches the response structure
+        setUser(res.data);
       } catch (error) {
         console.log("No user found or session expired");
         setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -33,12 +36,16 @@ export const AuthProvider = ({ children }) => {
         { withCredentials: true }
       );
 
-      console.log("Login Response:", res.data); // Debugging
+      console.log("Login Response:", res.data);
 
-      // Set user state directly from response
-      setUser(res.data.user); // Ensure this matches the response structure
+      if (res.data && res.data.user) {
+        setUser(res.data.user); // Ensure correct object structure
+      } else {
+        throw new Error("Invalid response from server");
+      }
     } catch (error) {
       console.error("Login failed", error.response?.data);
+      throw error;
     }
   };
 
@@ -50,14 +57,14 @@ export const AuthProvider = ({ children }) => {
         {},
         { withCredentials: true }
       );
-      setUser(null); // Remove user from state
+      setUser(null);
     } catch (error) {
       console.error("Logout failed", error.response?.data);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

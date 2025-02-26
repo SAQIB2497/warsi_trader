@@ -1,6 +1,5 @@
 import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext.jsx";
 
@@ -11,7 +10,7 @@ const Login = () => {
   });
 
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // Use the login function from AuthContext
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -20,11 +19,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(userData.email, userData.password); // Call the login function from AuthContext
+      await login(userData.email, userData.password);
       toast.success("Login successful!");
       navigate("/");
     } catch (error) {
-      console.error("Error:", error.response?.data);
+      console.error("Login error:", error.response?.data);
       toast.error(error.response?.data?.message || "Invalid email or password");
     }
   };

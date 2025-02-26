@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -10,7 +10,7 @@ const SignUp = () => {
     password: "",
   });
 
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -19,15 +19,15 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5001/api/users/signup", userData);
+      await axios.post("http://localhost:5001/api/users/register", userData);
       toast.success("Account registered successfully!");
-
-      setUserData({ name: "", email: "", password: "" }); // Reset form
+      setUserData({ name: "", email: "", password: "" });
 
       setTimeout(() => {
-        navigate("/login"); // Redirect to login page after toast
-      }, 2000); // Delay to allow toast to show
+        navigate("/login");
+      }, 2000);
     } catch (error) {
+      console.error("Signup error:", error.response?.data);
       toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
@@ -84,12 +84,6 @@ const SignUp = () => {
             Sign Up
           </button>
         </form>
-        <p className="text-sm text-center text-gray-500 mt-4">
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Login
-          </Link>
-        </p>
       </div>
     </div>
   );

@@ -23,7 +23,15 @@ export const registerUser = async (req, res) => {
         const newUser = new User({ name, email, password: hashedPassword });
         await newUser.save();
 
-        res.status(201).json({ message: "User registered successfully" });
+        // Respond with success message and the new user data (including hashed password)
+        res.status(201).json({
+            message: "User registered successfully",
+            user: {
+                name: newUser.name,
+                email: newUser.email,
+                password: newUser.password, // This will show the hashed password
+            },
+        });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -69,15 +77,18 @@ export const loginUser = async (req, res) => {
 
 // Logout User
 export const logoutUser = async (req, res) => {
-    res.cookie("token", "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        expires: new Date(0),
-    });
-
-    res.status(200).json({ message: "Logout successful" });
+    try {
+        res.cookie("token", "", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+            expires: new Date(0),
+        });
+        res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
 };
 
 // Get Current Logged-in User
