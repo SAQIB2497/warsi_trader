@@ -7,6 +7,7 @@ import SignUp from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AdminDashboard from "./pages/AdminDashboard"; // Import Admin Dashboard
 
 const App = () => {
   return (
@@ -26,6 +27,11 @@ const App = () => {
             {/* Protected Route for AllTools */}
             <Route element={<ProtectedRoute />}>
               <Route path="alltools" element={<AllTools />} />
+            </Route>
+
+            {/* Protected Route for AdminDashboard */}
+            <Route>
+              <Route path="/adminDashboard" element={<AdminDashboard />} />
             </Route>
           </Route>
         </Routes>

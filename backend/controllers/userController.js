@@ -8,7 +8,10 @@ dotenv.config();
 // Register User
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
+
+        // Prevent normal users from registering as admin
+        const assignedRole = role === "admin" ? "admin" : "user";
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -20,22 +23,23 @@ export const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create new user
-        const newUser = new User({ name, email, password: hashedPassword });
+        const newUser = new User({ name, email, password: hashedPassword, role: assignedRole });
         await newUser.save();
 
-        // Respond with success message and the new user data (including hashed password)
         res.status(201).json({
             message: "User registered successfully",
             user: {
+                id: newUser._id,
                 name: newUser.name,
                 email: newUser.email,
-                password: newUser.password, // This will show the hashed password
+                role: newUser.role,
             },
         });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
 
 // Login User
 export const loginUser = async (req, res) => {
@@ -55,7 +59,7 @@ export const loginUser = async (req, res) => {
         }
 
         // Generate JWT token
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
         // Store token in HTTP-only cookie
         res.cookie("token", token, {
@@ -68,12 +72,13 @@ export const loginUser = async (req, res) => {
 
         res.status(200).json({
             message: "Login successful",
-            user: { id: user._id, name: user.name, email: user.email },
+            user: { id: user._id, name: user.name, email: user.email, role: user.role },
         });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
 
 // Logout User
 export const logoutUser = async (req, res) => {

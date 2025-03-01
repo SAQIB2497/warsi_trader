@@ -63,6 +63,16 @@ const Navbar = () => {
             🛒 <span className="hidden md:inline text-base">Cart</span>
           </div>
 
+          {/* Show Admin only if the logged-in user is an admin */}
+          {user?.role === "admin" && (
+            <Link
+              to="/adminDashboard"
+              className="text-blue-500 font-semibold hover:text-blue-700 transition"
+            >
+              Admin
+            </Link>
+          )}
+
           {/* Show Login or Logout based on authentication status */}
           {user ? (
             <button
