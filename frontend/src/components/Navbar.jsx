@@ -57,6 +57,9 @@ const Navbar = () => {
             👤 <span className="hidden md:inline text-base">Profile</span>
           </div>
           <div className="cursor-pointer hover:text-blue-600 flex items-center gap-1">
+            <span className="hidden md:inline text-base">Contact Us</span>
+          </div>
+          <div className="cursor-pointer hover:text-blue-600 flex items-center gap-1">
             🛒 <span className="hidden md:inline text-base">Cart</span>
           </div>
 
