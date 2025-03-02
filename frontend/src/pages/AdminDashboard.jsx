@@ -1,33 +1,136 @@
+import { useState, useEffect } from "react";
+import {
+  getProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+} from "../services/productService";
+
 const AdminDashboard = () => {
-  const products = [
-    {
-      _id: "1",
-      name: "Laptop",
-      price: 1200,
-      category: "Electronics",
+  const [products, setProducts] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    category: "",
+    stock: "",
+  });
+  const [editingProductId, setEditingProductId] = useState(null);
+
+  // Fetch products from the backend
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  // Handle form input change
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Handle form submission (Add or Update)
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const hardcodedData = {
+      name: "Test Product",
+      price: 100,
+      category: "Test Category",
       stock: 10,
-    },
-    {
-      _id: "2",
-      name: "Smartphone",
-      price: 800,
-      category: "Electronics",
-      stock: 15,
-    },
-    {
-      _id: "3",
-      name: "Headphones",
-      price: 150,
-      category: "Accessories",
-      stock: 20,
-    },
-  ];
+    };
+    console.log("Using hardcoded data:", hardcodedData); // ✅ Debugging
+    await addProduct(hardcodedData);
+
+    setFormData({ name: "", price: "", category: "", stock: "" });
+    setEditingProductId(null);
+    fetchProducts(); // Refresh list
+  } catch (error) {
+    console.error("Error saving product:", error);
+  }
+};
+
+  // Edit a product
+  const handleEdit = (product) => {
+    setEditingProductId(product._id);
+    setFormData({
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      stock: product.stock,
+    });
+  };
+
+  // Delete a product
+  const handleDelete = async (id) => {
+    try {
+      await deleteProduct(id);
+      fetchProducts(); // Refresh list
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-semibold mb-4">
         Admin Dashboard - Manage Products
       </h2>
+
+      {/* Product Form (Add/Edit) */}
+      <form onSubmit={handleSubmit} className="mb-6">
+        <input
+          type="text"
+          name="name"
+          placeholder="Product Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="border p-2 m-2"
+        />
+        <input
+          type="number"
+          name="price"
+          placeholder="Price"
+          value={formData.price}
+          onChange={handleChange}
+          required
+          className="border p-2 m-2"
+        />
+        <input
+          type="text"
+          name="category"
+          placeholder="Category"
+          value={formData.category}
+          onChange={handleChange}
+          required
+          className="border p-2 m-2"
+        />
+        <input
+          type="number"
+          name="stock"
+          placeholder="Stock"
+          value={formData.stock}
+          onChange={handleChange}
+          required
+          className="border p-2 m-2"
+        />
+        <button
+          type="submit"
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          {editingProductId ? "Update Product" : "Add Product"}
+        </button>
+      </form>
+
+      {/* Product List Table */}
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr className="bg-gray-100">
@@ -46,10 +149,16 @@ const AdminDashboard = () => {
               <td className="border p-2">{product.category}</td>
               <td className="border p-2">{product.stock}</td>
               <td className="border p-2">
-                <button className="bg-blue-500 text-white px-3 py-1 rounded mr-2">
+                <button
+                  onClick={() => handleEdit(product)}
+                  className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+                >
                   Edit
                 </button>
-                <button className="bg-red-500 text-white px-3 py-1 rounded">
+                <button
+                  onClick={() => handleDelete(product._id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded"
+                >
                   Delete
                 </button>
               </td>

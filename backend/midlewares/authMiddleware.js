@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-
 // Middleware to check if user is authenticated
 export const authMiddleware = async (req, res, next) => {
     try {
