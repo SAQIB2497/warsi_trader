@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   getProducts,
   addProduct,
@@ -11,6 +13,7 @@ const AdminDashboard = () => {
   const [formData, setFormData] = useState({
     name: "",
     price: "",
+    brand: "",
     category: "",
     stock: "",
   });
@@ -36,26 +39,39 @@ const AdminDashboard = () => {
   };
 
   // Handle form submission (Add or Update)
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const hardcodedData = {
-      name: "Test Product",
-      price: 100,
-      category: "Test Category",
-      stock: 10,
-    };
-    console.log("Using hardcoded data:", hardcodedData); // ✅ Debugging
-    await addProduct(hardcodedData);
+    try {
+      // Validate required fields
+      if (
+        !formData.name ||
+        !formData.price ||
+        !formData.brand ||
+        !formData.category ||
+        !formData.stock
+      ) {
+        toast.error("Please fill out all required fields.");
+        return;
+      }
 
-    setFormData({ name: "", price: "", category: "", stock: "" });
-    setEditingProductId(null);
-    fetchProducts(); // Refresh list
-  } catch (error) {
-    console.error("Error saving product:", error);
-  }
-};
+      if (editingProductId) {
+        await updateProduct(editingProductId, formData);
+        toast.success("Product updated successfully!");
+      } else {
+        await addProduct(formData);
+        toast.success("Product added successfully!");
+      }
+
+      // Reset form and refresh product list
+      setFormData({ name: "", price: "", brand: "", category: "", stock: "" });
+      setEditingProductId(null);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error saving product:", error);
+      toast.error("Failed to save product.");
+    }
+  };
 
   // Edit a product
   const handleEdit = (product) => {
@@ -63,6 +79,7 @@ const handleSubmit = async (e) => {
     setFormData({
       name: product.name,
       price: product.price,
+      brand: product.brand,
       category: product.category,
       stock: product.stock,
     });
@@ -72,9 +89,11 @@ const handleSubmit = async (e) => {
   const handleDelete = async (id) => {
     try {
       await deleteProduct(id);
-      fetchProducts(); // Refresh list
+      fetchProducts();
+      toast.success("Product deleted successfully!");
     } catch (error) {
       console.error("Error deleting product:", error);
+      toast.error("Failed to delete product.");
     }
   };
 
@@ -106,13 +125,26 @@ const handleSubmit = async (e) => {
         />
         <input
           type="text"
-          name="category"
-          placeholder="Category"
-          value={formData.category}
+          name="brand"
+          placeholder="Brand"
+          value={formData.brand}
           onChange={handleChange}
           required
           className="border p-2 m-2"
         />
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          required
+          className="border p-2 m-2"
+        >
+          <option value="">Select Category</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Accessories">Accessories</option>
+        </select>
         <input
           type="number"
           name="stock"
@@ -136,6 +168,7 @@ const handleSubmit = async (e) => {
           <tr className="bg-gray-100">
             <th className="border p-2">Name</th>
             <th className="border p-2">Price</th>
+            <th className="border p-2">Brand</th>
             <th className="border p-2">Category</th>
             <th className="border p-2">Stock</th>
             <th className="border p-2">Actions</th>
@@ -146,6 +179,7 @@ const handleSubmit = async (e) => {
             <tr key={product._id} className="border">
               <td className="border p-2">{product.name}</td>
               <td className="border p-2">${product.price}</td>
+              <td className="border p-2">{product.brand}</td>
               <td className="border p-2">{product.category}</td>
               <td className="border p-2">{product.stock}</td>
               <td className="border p-2">

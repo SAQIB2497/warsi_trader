@@ -5,13 +5,18 @@ export const createProduct = async (req, res) => {
     try {
         const { name, description, price, brand, category, stock, image } = req.body;
 
+        // Validate required fields
+        if (!name || !price || !brand || !category || !stock) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
         // Check if product already exists
         const existingProduct = await Product.findOne({ name });
         if (existingProduct) {
             return res.status(400).json({ message: "Product already exists" });
         }
 
-        // Creating new product
+        // Create new product
         const newProduct = await Product.create({
             name,
             description,
@@ -20,11 +25,12 @@ export const createProduct = async (req, res) => {
             category,
             stock,
             image,
-            createdBy: req.user.id,
+            createdBy: req.user.id, // Attach the user ID from the token
         });
 
         res.status(201).json({ message: "Product created successfully", product: newProduct });
     } catch (error) {
+        console.error("Error creating product:", error);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };

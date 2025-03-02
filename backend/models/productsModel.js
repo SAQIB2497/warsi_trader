@@ -18,12 +18,12 @@ const productSchema = new mongoose.Schema(
         },
         brand: {
             type: String,
-            required: true,
+            required: true, // Ensure brand is required
             trim: true,
         },
         category: {
             type: String,
-            enum: ["Electronics", "Clothing", "Furniture", "Accessories"],
+            enum: ["Electronics", "Clothing", "Furniture", "Accessories"], // Valid enum values
             required: true,
         },
         stock: {

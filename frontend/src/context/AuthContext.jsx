@@ -28,27 +28,28 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Login function
-  const login = async (email, password) => {
-    try {
-      const res = await axios.post(
-        "http://localhost:5001/api/users/login",
-        { email, password },
-        { withCredentials: true }
-      );
+const login = async (email, password) => {
+  try {
+    const res = await axios.post(
+      "http://localhost:5001/api/users/login",
+      { email, password },
+      { withCredentials: true }
+    );
 
-      console.log("Login Response:", res.data);
+    console.log("Login Response:", res.data);
 
-      if (res.data && res.data.user) {
-        setUser(res.data.user); // Ensure correct object structure
-      } else {
-        throw new Error("Invalid response from server");
-      }
-    } catch (error) {
-      console.error("Login failed", error.response?.data);
-      throw error;
+    if (res.data && res.data.user) {
+      // Save token to localStorage
+      localStorage.setItem("token", res.data.token);
+      setUser(res.data.user); // Ensure correct object structure
+    } else {
+      throw new Error("Invalid response from server");
     }
-  };
-
+  } catch (error) {
+    console.error("Login failed", error.response?.data);
+    throw error;
+  }
+};
   // Logout function
   const logout = async () => {
     try {

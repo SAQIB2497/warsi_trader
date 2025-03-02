@@ -7,7 +7,7 @@ const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
     if (!token) {
         console.error("No token found in localStorage");
-        throw new Error("No token found");
+        throw new Error("No token found. Please log in again.");
     }
 
     const headers = { Authorization: `Bearer ${token}` };
