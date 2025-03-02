@@ -1,213 +1,81 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Tools from "../components/Tools";
+import { getProducts } from "../services/productService.js";
 
 const AllTools = () => {
-
+  const [tools, setTools] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Fetch tools from the backend
+    const fetchTools = async () => {
+      try {
+        const data = await getProducts();
+
+        // Ensure data structure and calculate discount
+        const updatedTools = data.map((tool) => ({
+          ...tool,
+          discount:
+            tool.price && tool.discountPrice
+              ? Math.round(
+                  ((tool.price - tool.discountPrice) / tool.price) * 100
+                )
+              : null, // Show nothing if no discount
+        }));
+
+        setTools(updatedTools);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchTools();
   }, []);
-  const allToolsData = [
-    {
-      id: 1,
-      name: "Harden Pump Oiler",
-      image: "/HardwareTool.jpg",
-      price: 1020,
-      discountPrice: 880,
-      discount: 14,
-      reviews: 3,
-      rating: 3.5,
-    },
-    {
-      id: 2,
-      name: "Polyurethane Foam Spray",
-      image: "/ElectricTool.jpg",
-      price: null,
-      discountPrice: 1230,
-      discount: 0,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Air Duster 400ML",
-      image: "/PlumberingTools.webp",
-      price: null,
-      discountPrice: 1510,
-      discount: 0,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 4,
-      name: "Harden 18pcs Repairing Tools Set",
-      image: "/powerTool.jpg",
-      price: 7580,
-      discountPrice: 6900,
-      discount: 9,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 5,
-      name: "Harden 18pcs Repairing Tools Set",
-      image: "/powerTool.jpg",
-      price: 7580,
-      discountPrice: 6900,
-      discount: 9,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 6,
-      name: "Air Duster 400ML",
-      image: "/PlumberingTools.webp",
-      price: null,
-      discountPrice: 1510,
-      discount: 0,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 7,
-      name: "Harden Pump Oiler",
-      image: "/HardwareTool.jpg",
-      price: 1020,
-      discountPrice: 880,
-      discount: 14,
-      reviews: 3,
-      rating: 3.5,
-    },
-    {
-      id: 4,
-      name: "Harden 18pcs Repairing Tools Set",
-      image: "/powerTool.jpg",
-      price: 7580,
-      discountPrice: 6900,
-      discount: 9,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 1,
-      name: "Harden Pump Oiler",
-      image: "/HardwareTool.jpg",
-      price: 1020,
-      discountPrice: 880,
-      discount: 14,
-      reviews: 3,
-      rating: 3.5,
-    },
-    {
-      id: 2,
-      name: "Polyurethane Foam Spray",
-      image: "/ElectricTool.jpg",
-      price: null,
-      discountPrice: 1230,
-      discount: 0,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Air Duster 400ML",
-      image: "/PlumberingTools.webp",
-      price: null,
-      discountPrice: 1510,
-      discount: 0,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 4,
-      name: "Harden 18pcs Repairing Tools Set",
-      image: "/powerTool.jpg",
-      price: 7580,
-      discountPrice: 6900,
-      discount: 9,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 5,
-      name: "Harden 18pcs Repairing Tools Set",
-      image: "/powerTool.jpg",
-      price: 7580,
-      discountPrice: 6900,
-      discount: 9,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 6,
-      name: "Air Duster 400ML",
-      image: "/PlumberingTools.webp",
-      price: null,
-      discountPrice: 1510,
-      discount: 0,
-      reviews: 1,
-      rating: 5,
-    },
-    {
-      id: 7,
-      name: "Harden Pump Oiler",
-      image: "/HardwareTool.jpg",
-      price: 1020,
-      discountPrice: 880,
-      discount: 14,
-      reviews: 3,
-      rating: 3.5,
-    },
-    {
-      id: 4,
-      name: "Harden 18pcs Repairing Tools Set",
-      image: "/powerTool.jpg",
-      price: 7580,
-      discountPrice: 6900,
-      discount: 9,
-      reviews: 1,
-      rating: 5,
-    },
-  ];
+
+  if (loading)
+    return <p className="text-center text-gray-600">Loading products...</p>;
+  if (error) return <p className="text-center text-red-600">Error: {error}</p>;
 
   return (
-    <div className="w-full min-h-screen p-6">
-      {/* Heading */}
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">
-        Premium Tools Collection
-      </h1>
+    <div className="w-full min-h-screen p-4">
+      {/* Heading and Paragraph with same margin as cards */}
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          Explore Top-Quality Tools for Every Task
+        </h1>
+        <p className="text-gray-700 text-base md:text-lg mb-8 text-justify">
+          Whether you're a seasoned professional tackling complex projects or a
+          dedicated DIY enthusiast working on creative home improvements, our
+          extensive and carefully curated collection of premium tools guarantees
+          unmatched durability, exceptional precision, and outstanding
+          efficiency. Designed to meet the highest standards, our tools are
+          built to withstand the toughest challenges while delivering
+          consistent, reliable performance. Upgrade and enhance your toolkit
+          with our top-rated, high-quality products, meticulously crafted and
+          engineered for every task, every hand, and every skill level. From
+          heavy-duty construction tools to delicate precision instruments, we
+          offer a wide range of solutions tailored to your specific needs. We
+          proudly provide reliable, durable, and long-lasting tools that empower
+          you to work smarter, faster, and more efficiently, transforming every
+          job into a simpler, smoother, and more enjoyable experience. With our
+          tools, you can tackle any project with confidence, knowing that you
+          have the best equipment to achieve professional-grade results every
+          time.
+        </p>
 
-      {/* Description */}
-      <p className="text-gray-700 text-lg max-w-7xl text-justify leading-relaxed">
-        Discover a high-quality selection of tools built for professionals and
-        DIY enthusiasts alike. Our collection includes a variety of durable and
-        efficient tools designed to handle all types of tasks, from home
-        improvements to heavy-duty construction projects. Whether you're working
-        on automotive repairs, woodworking, plumbing, or electrical work, we
-        have the perfect tools for the job.
-        <br />
-        <br />
-        Our range features hand tools such as wrenches, pliers, and
-        screwdrivers, as well as power tools that bring precision and speed to
-        your workflow. We also offer specialty tools to ensure that every task
-        is completed with efficiency. Each tool is crafted with high-quality
-        materials, providing long-lasting performance and reliability.
-        <br />
-        <br />
-        Browse our selection to find the right tools for your needs, whether
-        it's for a small repair, a large-scale project, or professional use.
-        Equip yourself with the best tools in the market and get the job done
-        with confidence!
-      </p>
-
-      {/* Space between description and products */}
-      <div className="mt-10"></div>
-
-      {/* Tool Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {allToolsData.map((tool) => (
-          <Tools key={tool.id} tool={tool} />
-        ))}
+        {/* Responsive Grid with Centered Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-4">
+          {tools.map((tool) => (
+            <div key={tool._id}>
+              <Tools tool={tool} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

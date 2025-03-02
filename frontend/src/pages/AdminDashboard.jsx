@@ -16,6 +16,7 @@ const AdminDashboard = () => {
     brand: "",
     category: "",
     stock: "",
+    image: "", // Added image field
   });
   const [editingProductId, setEditingProductId] = useState(null);
 
@@ -49,7 +50,8 @@ const AdminDashboard = () => {
         !formData.price ||
         !formData.brand ||
         !formData.category ||
-        !formData.stock
+        !formData.stock ||
+        !formData.image
       ) {
         toast.error("Please fill out all required fields.");
         return;
@@ -64,7 +66,14 @@ const AdminDashboard = () => {
       }
 
       // Reset form and refresh product list
-      setFormData({ name: "", price: "", brand: "", category: "", stock: "" });
+      setFormData({
+        name: "",
+        price: "",
+        brand: "",
+        category: "",
+        stock: "",
+        image: "",
+      });
       setEditingProductId(null);
       fetchProducts();
     } catch (error) {
@@ -82,6 +91,7 @@ const AdminDashboard = () => {
       brand: product.brand,
       category: product.category,
       stock: product.stock,
+      image: product.image, // Populate image URL when editing
     });
   };
 
@@ -154,6 +164,15 @@ const AdminDashboard = () => {
           required
           className="border p-2 m-2"
         />
+        <input
+          type="text"
+          name="image"
+          placeholder="Image URL"
+          value={formData.image}
+          onChange={handleChange}
+          required
+          className="border p-2 m-2"
+        />
         <button
           type="submit"
           className="bg-green-500 text-white px-4 py-2 rounded"
@@ -166,6 +185,7 @@ const AdminDashboard = () => {
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr className="bg-gray-100">
+            <th className="border p-2">Image</th>
             <th className="border p-2">Name</th>
             <th className="border p-2">Price</th>
             <th className="border p-2">Brand</th>
@@ -177,6 +197,13 @@ const AdminDashboard = () => {
         <tbody>
           {products.map((product) => (
             <tr key={product._id} className="border">
+              <td className="border p-2">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-16 h-16 object-cover rounded"
+                />
+              </td>
               <td className="border p-2">{product.name}</td>
               <td className="border p-2">${product.price}</td>
               <td className="border p-2">{product.brand}</td>
