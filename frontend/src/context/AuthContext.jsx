@@ -1,23 +1,31 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setCart, clearCart } from "../redux/cartSlice";
 import axios from "axios";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext(null); // ✅ Create and export AuthContext
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Added to prevent unnecessary renders
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch(); // ✅ Use dispatch for Redux
 
-  // Check if user is logged in when the app loads
   useEffect(() => {
     const checkUser = async () => {
       try {
         const res = await axios.get("http://localhost:5001/api/users/current", {
           withCredentials: true,
         });
-        console.log("User found in session:", res.data);
         setUser(res.data);
+
+        // ✅ Fetch user cart after login
+        if (res.data && res.data._id) {
+          const cartRes = await axios.get(
+            `http://localhost:5001/api/cart/${res.data._id}`
+          );
+          dispatch(setCart(cartRes.data.cart));
+        }
       } catch (error) {
-        console.log("No user found or session expired");
         setUser(null);
       } finally {
         setLoading(false);
@@ -27,30 +35,34 @@ export const AuthProvider = ({ children }) => {
     checkUser();
   }, []);
 
-  // Login function
-const login = async (email, password) => {
-  try {
-    const res = await axios.post(
-      "http://localhost:5001/api/users/login",
-      { email, password },
-      { withCredentials: true }
-    );
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5001/api/users/login",
+        { email, password },
+        { withCredentials: true }
+      );
 
-    console.log("Login Response:", res.data);
+      if (res.data && res.data.user) {
+        localStorage.setItem("token", res.data.token);
+        setUser(res.data.user);
 
-    if (res.data && res.data.user) {
-      // Save token to localStorage
-      localStorage.setItem("token", res.data.token);
-      setUser(res.data.user); // Ensure correct object structure
-    } else {
-      throw new Error("Invalid response from server");
+        // ✅ Fetch cart for the logged-in user
+        if (res.data.user._id) {
+          const cartRes = await axios.get(
+            `http://localhost:5001/api/cart/${res.data.user._id}`
+          );
+          dispatch(setCart(cartRes.data.cart));
+        }
+      } else {
+        throw new Error("Invalid response from server");
+      }
+    } catch (error) {
+      console.error("Login failed", error.response?.data);
+      throw error;
     }
-  } catch (error) {
-    console.error("Login failed", error.response?.data);
-    throw error;
-  }
-};
-  // Logout function
+  };
+
   const logout = async () => {
     try {
       await axios.post(
@@ -59,6 +71,7 @@ const login = async (email, password) => {
         { withCredentials: true }
       );
       setUser(null);
+      dispatch(clearCart()); // ✅ Clear cart when user logs out
     } catch (error) {
       console.error("Logout failed", error.response?.data);
     }
