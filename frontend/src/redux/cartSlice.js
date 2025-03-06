@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// Load cart from localStorage
 const loadCartFromLocalStorage = () => {
     const cart = localStorage.getItem("cart");
     return cart ? JSON.parse(cart) : [];
@@ -7,14 +8,19 @@ const loadCartFromLocalStorage = () => {
 
 const initialState = {
     cart: loadCartFromLocalStorage(),
+    status: 'idle', // Track API call status if needed
 };
 
 const cartSlice = createSlice({
     name: "cart",
     initialState,
     reducers: {
-        setCart: (state, action) => {
-            state.cart = action.payload;
+       setCart: (state, action) => {
+            // ✅ Accept full product objects with quantities
+            state.cart = action.payload.map(item => ({
+                ...item,
+                quantity: item.quantity || 1 // Fallback for legacy data
+            }));
             localStorage.setItem("cart", JSON.stringify(state.cart));
         },
         addToCart: (state, action) => {
@@ -46,7 +52,7 @@ const cartSlice = createSlice({
         },
         clearCart: (state) => {
             state.cart = [];
-            localStorage.removeItem("cart");
+            localStorage.setItem("cart", JSON.stringify(state.cart));
         },
     },
 });

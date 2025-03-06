@@ -1,9 +1,40 @@
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/cartSlice.js";
+import { addToCart, setCart } from "../redux/cartSlice";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 const Tools = ({ tool }) => {
   const dispatch = useDispatch();
-  const fakeOriginalPrice = Math.round(tool.price * 1.4);
+  const { user } = useAuth();
+
+  const handleAddToCart = async () => {
+    if (user) {
+      try {
+        const response = await axios.post(
+          "http://localhost:5001/api/cart/add",
+          { productId: tool._id, quantity: 1 },
+          { withCredentials: true }
+        );
+
+        const cartItems = response.data.items.map((item) => ({
+          ...item.productId,
+          quantity: item.quantity,
+          image: item.productId.image || [],
+        }));
+
+        dispatch(setCart(cartItems));
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+      }
+    } else {
+      dispatch(
+        addToCart({
+          ...tool,
+          image: Array.isArray(tool.image) ? tool.image : [tool.image],
+        })
+      );
+    }
+  };
 
   return (
     <div className="relative bg-white shadow-lg rounded-xl overflow-hidden p-4 transition-all duration-300 transform hover:scale-105 hover:shadow-xl border border-gray-200 w-64">
@@ -24,12 +55,12 @@ const Tools = ({ tool }) => {
       <div className="flex items-center space-x-2 mt-1">
         <span className="text-red-600 font-bold text-lg">Rs. {tool.price}</span>
         <span className="text-gray-500 line-through text-sm">
-          Rs. {fakeOriginalPrice}
+          Rs. {Math.round(tool.price * 1.4)}
         </span>
       </div>
 
       <button
-        onClick={() => dispatch(addToCart(tool))}
+        onClick={handleAddToCart}
         className="mt-3 w-full bg-gradient-to-r from-red-500 to-red-700 text-white py-1.5 rounded-md font-semibold text-sm shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-300"
       >
         Add to Cart 🛒

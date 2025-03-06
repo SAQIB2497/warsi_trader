@@ -12,52 +12,83 @@ export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
 
   // Function to check user authentication on page reload
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const res = await axios.get("http://localhost:5001/api/users/current", {
+useEffect(() => {
+  const checkUser = async () => {
+    try {
+      const res = await axios.get("http://localhost:5001/api/users/current", {
+        withCredentials: true,
+      });
+
+      if (res.data) {
+        setUser(res.data);
+        const cartRes = await axios.get("http://localhost:5001/api/cart", {
           withCredentials: true,
         });
 
-        console.log("🔵 User data from backend:", res.data); // Debugging
+        const cartItems = cartRes.data.items.map((item) => ({
+          ...item.productId,
+          quantity: item.quantity,
+          image: item.productId.image || [],
+        }));
 
-        if (res.data) {
-          setUser(res.data);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error.response?.data || error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkUser();
-  }, [dispatch]);
-
-  //Login
-  const login = async (email, password) => {
-    try {
-      const res = await axios.post(
-        "http://localhost:5001/api/users/login",
-        { email, password },
-        { withCredentials: true }
-      );
-
-      if (res.data && res.data.user) {
-        setUser(res.data.user); // Set the user state
-      } else {
-        throw new Error("Invalid response from server");
+        dispatch(setCart(cartItems));
       }
     } catch (error) {
-      console.error("Login failed:", error.response?.data || error);
-      throw error;
+      // Error handling
     }
   };
+  checkUser();
+}, [dispatch]);
 
-  //Logout
+  // Login
+ const login = async (email, password) => {
+   try {
+     const res = await axios.post(
+       "http://localhost:5001/api/users/login",
+       { email, password },
+       { withCredentials: true }
+     );
+
+     if (res.data?.user) {
+       setUser(res.data.user);
+
+       // Transform local cart items for merging
+       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+       if (localCart.length > 0) {
+         const itemsToMerge = localCart.map((item) => ({
+           productId: item._id,
+           quantity: item.quantity,
+         }));
+
+         await axios.post(
+           "http://localhost:5001/api/cart/merge",
+           { items: itemsToMerge },
+           { withCredentials: true }
+         );
+         localStorage.removeItem("cart");
+       }
+
+       // Fetch updated cart
+       const cartRes = await axios.get("http://localhost:5001/api/cart", {
+         withCredentials: true,
+       });
+
+       // Transform cart items
+       const cartItems = cartRes.data.items.map((item) => ({
+         ...item.productId,
+         quantity: item.quantity,
+         image: item.productId.image || [],
+       }));
+
+       dispatch(setCart(cartItems));
+     }
+   } catch (error) {
+     console.error("Login failed:", error);
+     throw new Error(error.response?.data?.message || "Login failed");
+   }
+ };
+
+  // Logout
   const logout = async () => {
     try {
       await axios.post(
