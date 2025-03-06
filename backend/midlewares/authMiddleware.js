@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-// Middleware to check if user is authenticated
 export const authMiddleware = async (req, res, next) => {
     try {
         let token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(" ")[1]);
@@ -9,10 +8,7 @@ export const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized, no token provided" });
         }
 
-        // Verify Token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // Attach user role directly from token
         req.user = { id: decoded.id, role: decoded.role };
 
         next();
@@ -21,7 +17,6 @@ export const authMiddleware = async (req, res, next) => {
     }
 };
 
-// Middleware to check if user is an admin
 export const adminMiddleware = (req, res, next) => {
     if (req.user && req.user.role === "admin") {
         next();

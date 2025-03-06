@@ -6,11 +6,12 @@ import { FaTools, FaHome } from "react-icons/fa";
 import { MdSms } from "react-icons/md";
 import { useSelector } from "react-redux";
 
-
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  console.log("🔵 User in Navbar:", user); // Debugging
 
   // Get cart items from Redux
   const cartItems = useSelector((state) => state.cart.cart || []);

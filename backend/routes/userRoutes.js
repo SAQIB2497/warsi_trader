@@ -7,6 +7,6 @@ const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
-router.get("/current", authMiddleware, getCurrentUser);
+router.get("/current", authMiddleware, getCurrentUser); // Ensure this route exists
 
 export default router;
