@@ -7,11 +7,13 @@ import {
 } from "../redux/cartSlice";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const cart = useSelector((state) => state.cart.cart);
   const dispatch = useDispatch();
   const { user } = useAuth();
+  const navigate = useNavigate(); 
 
   const handleRemove = async (productId) => {
     if (user) {
@@ -93,10 +95,11 @@ const Cart = () => {
               </thead>
               <tbody>
                 {cart.map((item) => {
-                  const fakeOriginalPrice = Math.round(item.price * 1.3);; // Fake price 30% higher
-                  const discountPercentage = ((
-                    ((fakeOriginalPrice - item.price) / fakeOriginalPrice) * 100
-                  )).toFixed(0);
+                  const fakeOriginalPrice = Math.round(item.price * 1.3); // Fake price 30% higher
+                  const discountPercentage = (
+                    ((fakeOriginalPrice - item.price) / fakeOriginalPrice) *
+                    100
+                  ).toFixed(0);
 
                   return (
                     <tr
@@ -162,7 +165,10 @@ const Cart = () => {
 
         {cart.length > 0 && (
           <div className="mt-4 sm:mt-6 flex justify-center sm:justify-end">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-md transition">
+            <button
+              onClick={() => navigate("/checkout")}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-md transition"
+            >
               Proceed to Checkout
             </button>
           </div>

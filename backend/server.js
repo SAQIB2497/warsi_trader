@@ -7,11 +7,16 @@ import cookieParser from "cookie-parser";
 import adminRoutes from "./routes/adminRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import Stripe from 'stripe';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Initialize Stripe with your Secret Key
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Middleware
 app.use(
@@ -40,6 +45,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
