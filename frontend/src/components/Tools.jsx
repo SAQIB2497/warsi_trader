@@ -19,7 +19,8 @@ const Tools = ({ tool }) => {
         const cartItems = response.data.items.map((item) => ({
           ...item.productId,
           quantity: item.quantity,
-          image: item.productId.image || [],
+          image: item.productId.image || [], // Ensure image array
+          _id: item.productId._id,
         }));
 
         dispatch(setCart(cartItems));
@@ -44,7 +45,7 @@ const Tools = ({ tool }) => {
 
       <div className="flex justify-center">
         <img
-          src={tool.image}
+          src={tool.image?.[0] || "/placeholder-image.jpg"}
           alt={tool.name}
           className="w-24 h-24 object-contain rounded-lg"
         />

@@ -1,4 +1,5 @@
 import Cart from "../models/Cart.js";
+import Product from "../models/productsModel.js";
 
 // Add item to cart
 export const addToCart = async (req, res) => {
@@ -48,20 +49,32 @@ export const getCart = async (req, res) => {
 // Update cart item quantity
 export const updateCart = async (req, res) => {
     const { productId, quantity } = req.body;
-
     try {
-        const cart = await Cart.findOne({ userId: req.user.id }); // Changed to req.user.id
+        const cart = await Cart.findOne({ userId: req.user.id })
+            .populate({
+                path: 'items.productId',
+                model: Product
+            });
 
         if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-        const item = cart.items.find(item => item.productId.toString() === productId);
+        const item = cart.items.find(item =>
+            item.productId._id.toString() === productId
+        );
 
-        if (!item) return res.status(404).json({ message: "Item not found in cart" });
+        if (!item) return res.status(404).json({ message: "Item not found" });
 
         item.quantity = quantity;
         await cart.save();
 
-        res.status(200).json(cart);
+        // Re-populate to get latest data
+        const populatedCart = await Cart.findById(cart._id)
+            .populate({
+                path: 'items.productId',
+                model: Product
+            });
+
+        res.status(200).json(populatedCart);
     } catch (error) {
         res.status(500).json({ message: "Error updating cart", error });
     }

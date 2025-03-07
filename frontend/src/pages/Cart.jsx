@@ -25,6 +25,7 @@ const Cart = () => {
           ...item.productId,
           quantity: item.quantity,
           _id: item.productId._id,
+          image: item.productId.image || [], // Ensure image array exists
         }));
 
         dispatch(setCart(cartItems));
@@ -36,8 +37,9 @@ const Cart = () => {
     }
   };
 
-  // Add similar logic for quantity changes
   const handleQuantityChange = async (productId, newQuantity) => {
+    if (newQuantity < 1) return; // Prevent negative quantities
+
     if (user) {
       try {
         const response = await axios.put(
@@ -50,6 +52,7 @@ const Cart = () => {
           ...item.productId,
           quantity: item.quantity,
           _id: item.productId._id,
+          image: item.productId.image || [], // Ensure image array exists
         }));
 
         dispatch(setCart(cartItems));
@@ -57,7 +60,12 @@ const Cart = () => {
         console.error("Error updating quantity:", error);
       }
     } else {
-      // Handle local storage update
+      // Handle local storage update properly
+      if (newQuantity > 1) {
+        dispatch(decreaseQuantity(productId));
+      } else {
+        dispatch(increaseQuantity(productId));
+      }
     }
   };
 
@@ -90,7 +98,7 @@ const Cart = () => {
                   >
                     <td className="p-2 sm:p-3 flex items-center gap-2 sm:gap-4 border">
                       <img
-                        src={item.image[0]}
+                        src={item.image?.[0] || "/placeholder-image.jpg"}
                         alt={item.name}
                         className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md"
                       />
