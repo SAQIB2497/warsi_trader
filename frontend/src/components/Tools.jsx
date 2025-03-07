@@ -56,7 +56,7 @@ const Tools = ({ tool }) => {
       <div className="flex items-center space-x-2 mt-1">
         <span className="text-red-600 font-bold text-lg">Rs. {tool.price}</span>
         <span className="text-gray-500 line-through text-sm">
-          Rs. {Math.round(tool.price * 1.4)}
+          Rs. {Math.round(tool.price * 1.3)}
         </span>
       </div>
 
