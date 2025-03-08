@@ -11,7 +11,7 @@ const Tools = ({ tool }) => {
     if (user) {
       try {
         const response = await axios.post(
-          "http://localhost:5001/api/cart/add",
+          `${import.meta.env.VITE_API_URL}/api/cart/add`,
           { productId: tool._id, quantity: 1 },
           { withCredentials: true }
         );

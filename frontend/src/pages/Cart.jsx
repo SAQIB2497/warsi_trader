@@ -19,7 +19,7 @@ const Cart = () => {
     if (user) {
       try {
         const response = await axios.delete(
-          `http://localhost:5001/api/cart/remove/${productId}`,
+          `${import.meta.env.VITE_API_URL}/api/cart/remove/${productId}`,
           { withCredentials: true }
         );
 
@@ -45,7 +45,7 @@ const Cart = () => {
     if (user) {
       try {
         const response = await axios.put(
-          "http://localhost:5001/api/cart/update",
+          `${import.meta.env.VITE_API_URL}/api/cart/update`,
           { productId, quantity: newQuantity },
           { withCredentials: true }
         );

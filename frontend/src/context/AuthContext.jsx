@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { setCart, clearCart } from "../redux/cartSlice";
 import axios from "axios";
 
-// Create Auth Context
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -11,96 +10,103 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-  // Function to check user authentication on page reload
-useEffect(() => {
-  const checkUser = async () => {
-    try {
-      const res = await axios.get("http://localhost:5001/api/users/current", {
-        withCredentials: true,
-      });
+  // Check authentication status on load
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/users/current`,
+          { withCredentials: true }
+        );
 
-      if (res.data) {
-        setUser(res.data);
-        const cartRes = await axios.get("http://localhost:5001/api/cart", {
-          withCredentials: true,
-        });
+        setUser(data);
 
-        const cartItems = cartRes.data.items.map((item) => ({
-          ...item.productId,
-          quantity: item.quantity,
-          image: item.productId.image || [],
-        }));
+        // Fetch user's cart
+        const cartRes = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/cart`,
+          { withCredentials: true }
+        );
 
-        dispatch(setCart(cartItems));
+        dispatch(
+          setCart(
+            cartRes.data.items.map((item) => ({
+              ...item.productId,
+              quantity: item.quantity,
+              image: item.productId.image || [],
+            }))
+          )
+        );
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      // Error handling
-    }
-  };
-  checkUser();
-}, [dispatch]);
+    };
+    checkAuth();
+  }, [dispatch]);
 
-  // Login
- const login = async (email, password) => {
-   try {
-     const res = await axios.post(
-       "http://localhost:5001/api/users/login",
-       { email, password },
-       { withCredentials: true }
-     );
-
-     if (res.data?.user) {
-       setUser(res.data.user);
-
-       // Transform local cart items for merging
-       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
-       if (localCart.length > 0) {
-         const itemsToMerge = localCart.map((item) => ({
-           productId: item._id,
-           quantity: item.quantity,
-         }));
-
-         await axios.post(
-           "http://localhost:5001/api/cart/merge",
-           { items: itemsToMerge },
-           { withCredentials: true }
-         );
-         localStorage.removeItem("cart");
-       }
-
-       // Fetch updated cart
-       const cartRes = await axios.get("http://localhost:5001/api/cart", {
-         withCredentials: true,
-       });
-
-       // Transform cart items
-       const cartItems = cartRes.data.items.map((item) => ({
-         ...item.productId,
-         quantity: item.quantity,
-         image: item.productId.image || [],
-       }));
-
-       dispatch(setCart(cartItems));
-     }
-   } catch (error) {
-     console.error("Login failed:", error);
-     throw new Error(error.response?.data?.message || "Login failed");
-   }
- };
-
-  // Logout
-  const logout = async () => {
+  // Login function
+  const login = async (email, password) => {
     try {
-      await axios.post(
-        "http://localhost:5001/api/users/logout",
-        {},
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users/login`,
+        { email, password },
+        { withCredentials: true }
+      );
+      
+      // Correct response structure
+      setUser(data.user || data); // Handle both response formats
+
+
+      const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+      if (localCart.length > 0) {
+        await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/cart/merge`,
+          {
+            items: localCart.map((item) => ({
+              productId: item._id,
+              quantity: item.quantity,
+            })),
+          },
+          { withCredentials: true }
+        );
+        localStorage.removeItem("cart");
+      }
+
+      // Fetch updated cart
+      const cartRes = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/cart`,
         { withCredentials: true }
       );
 
-      setUser(null); // Clear the user state
+      dispatch(
+        setCart(
+          cartRes.data.items.map((item) => ({
+            ...item.productId,
+            quantity: item.quantity,
+            image: item.productId.image || [],
+          }))
+        )
+      );
+
+      return data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Login failed");
+    }
+  };
+
+  // Logout function
+  const logout = async () => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users/logout`,
+        {},
+        { withCredentials: true }
+      );
+      setUser(null);
       dispatch(clearCart());
     } catch (error) {
-      console.error("Logout failed:", error.response?.data || error);
+      console.error("Logout error:", error);
     }
   };
 
@@ -111,6 +117,4 @@ useEffect(() => {
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

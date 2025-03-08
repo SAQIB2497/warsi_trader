@@ -48,11 +48,12 @@ export const loginUser = async (req, res) => {
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         // Set the token in a cookie
+        // In loginUser controller
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true, // Force HTTPS (required for sameSite: 'none')
+            secure: process.env.NODE_ENV === "production", // Only HTTPS in production
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            domain: process.env.NODE_ENV === "production" ? ".railway.app" : "localhost",
+            domain: process.env.NODE_ENV === "production" ? ".railway.app" : undefined,
             path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });

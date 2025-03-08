@@ -4,27 +4,18 @@ import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext.jsx";
 
 const Login = () => {
-  const [userData, setUserData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const navigate = useNavigate();
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const { login } = useContext(AuthContext);
-
-  const handleChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
-  };
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(userData.email, userData.password);
+      await login(credentials.email, credentials.password);
       toast.success("Login successful!");
       navigate("/");
     } catch (error) {
-      console.error("Login error:", error.response?.data);
-      toast.error(error.response?.data?.message || "Invalid email or password");
+      toast.error(error.message);
     }
   };
 
@@ -40,10 +31,11 @@ const Login = () => {
             <input
               type="email"
               name="email"
-              value={userData.email}
-              onChange={handleChange}
+              value={credentials.email}
+              onChange={(e) =>
+                setCredentials({ ...credentials, email: e.target.value })
+              }
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter your email"
               required
             />
           </div>
@@ -52,10 +44,11 @@ const Login = () => {
             <input
               type="password"
               name="password"
-              value={userData.password}
-              onChange={handleChange}
+              value={credentials.password}
+              onChange={(e) =>
+                setCredentials({ ...credentials, password: e.target.value })
+              }
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter your password"
               required
             />
           </div>

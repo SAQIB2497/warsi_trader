@@ -19,7 +19,10 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5001/api/users/register", userData);
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users/register`,
+        userData
+      );
       toast.success("Account registered successfully!");
       setUserData({ name: "", email: "", password: "" });
 
