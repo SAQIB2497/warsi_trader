@@ -50,9 +50,11 @@ export const loginUser = async (req, res) => {
         // Set the token in a cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            secure: true, // Force HTTPS (required for sameSite: 'none')
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            domain: process.env.NODE_ENV === "production" ? ".railway.app" : "localhost",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
         console.log("✅ Token set in cookie:", token); // Debugging
