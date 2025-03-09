@@ -24,7 +24,7 @@ app.use(
     cors({
         origin: [
             "https://localhost:5173",
-            "https://warsitrader-production.up.railway.app"
+            "https://warsi-trader.vercel.app/"
         ],
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
