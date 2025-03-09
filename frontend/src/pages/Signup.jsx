@@ -16,24 +16,27 @@ const SignUp = () => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
+  // Update handleSubmit function
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Add withCredentials: true to the request
-      await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/users/register`,
-        userData,
-        { withCredentials: true } // This is crucial for cookies
+        userData
       );
-      toast.success("Account registered successfully!");
-      setUserData({ name: "", email: "", password: "" });
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      if (response.data.user) {
+        toast.success(
+          "Account registered successfully! Redirecting to login..."
+        );
+        setTimeout(() => navigate("/login"), 1500);
+      }
     } catch (error) {
-      console.error("Signup error:", error.response?.data);
-      toast.error(error.response?.data?.message || "Something went wrong");
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Registration failed";
+      toast.error(errorMessage);
     }
   };
 

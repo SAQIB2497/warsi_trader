@@ -21,30 +21,41 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Initial auth check
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/users/current`
-        );
-        setUser(data);
-        
-        // Fetch user's cart
-        const cartRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart`);
-        dispatch(setCart(cartRes.data.items.map(item => ({
-          ...item.productId,
-          quantity: item.quantity,
-          image: item.productId.image || []
-        })));
-      } catch (error) {
-        localStorage.removeItem("authToken");
-        setUser(null);
-      } finally {
+// Update the initial auth check useEffect
+useEffect(() => {
+  const checkAuth = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
         setLoading(false);
+        return;
       }
-    };
-    checkAuth();
-  }, [dispatch]);
+
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/users/current`
+      );
+      
+      setUser(data);
+      
+      // Fetch cart after successful auth check
+      const cartRes = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/cart`
+      );
+      dispatch(setCart(cartRes.data.items.map(item => ({
+        ...item.productId,
+        quantity: item.quantity,
+        image: item.productId.image || []
+      }))));
+      
+    } catch (error) {
+      localStorage.removeItem("authToken");
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+  checkAuth();
+}, [dispatch]);
 
   const login = async (email, password) => {
     try {

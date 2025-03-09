@@ -21,13 +21,19 @@ app.set("trust proxy", 1);
 app.use(
     cors({
         origin: [
-            "http://localhost:5173",
-            "https://warsi-trader.vercel.app"
+            "https://warsi-trader.vercel.app",
+            "https://warsitrader-production.up.railway.app"
         ],
         methods: ["GET", "POST", "PUT", "DELETE"],
         allowedHeaders: ["Content-Type", "Authorization"]
     })
 );
+
+// Add this after CORS setup
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Headers", "Authorization");
+    next();
+});
 
 app.use(express.json());
 app.use(cookieParser());

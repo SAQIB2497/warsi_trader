@@ -7,16 +7,20 @@ const Login = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const { login, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await login(credentials.email, credentials.password);
-    toast.success("Login successful!");
-    navigate("/");
-  } catch (error) {
-    toast.error(error.message);
-  }
-};
+  // Update handleSubmit with better error handling
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await login(credentials.email, credentials.password);
+      toast.success("Login successful!");
+      navigate("/");
+    } catch (error) {
+      const errorMessage = error.message.includes("401")
+        ? "Invalid email or password"
+        : error.message;
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
