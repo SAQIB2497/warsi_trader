@@ -13,8 +13,10 @@ const Login = () => {
     try {
       await login(credentials.email, credentials.password);
       toast.success("Login successful!");
-      navigate("/");
+      // Add delay for cookie propagation
+      setTimeout(() => navigate("/"), 500);
     } catch (error) {
+      console.error("Login error:", error);
       toast.error(error.message);
     }
   };

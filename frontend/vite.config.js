@@ -1,3 +1,4 @@
+// Ensure proper HTTPS setup
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import mkcert from 'vite-plugin-mkcert'
@@ -7,10 +8,12 @@ export default defineConfig({
     https: true,
     port: 5173,
     strictPort: true,
-    host: true // Add this
+    host: true
   },
   plugins: [
     react(),
-    mkcert()
-  ],
+    mkcert({
+      hosts: ['localhost', '127.0.0.1']
+    })
+  ]
 })
