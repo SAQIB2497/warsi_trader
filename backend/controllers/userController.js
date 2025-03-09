@@ -34,47 +34,49 @@
         }
     };
 
-    // Login User
-    export const loginUser = async (req, res) => {
-        try {
-            const { email, password } = req.body;
-            const user = await User.findOne({ email });
+// In userControler.js (loginUser function)
+export const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
 
-            if (!user) return res.status(400).json({ message: "User not found" });
+        if (!user) return res.status(400).json({ message: "User not found" });
 
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-            const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
-            // Login controller
-            res.cookie("token", token, {
-                httpOnly: true,
-                secure: true, // Always true in production
-                sameSite: "none",
-                path: "/",
-                // Remove domain specification for production
-                domain: process.env.NODE_ENV === "production"
-                    ? undefined // Let browser handle domain
-                    : "localhost",
-                maxAge: 7 * 24 * 60 * 60 * 1000
-            });
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
 
+        // Set cookie options based on environment
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // true in production (HTTPS)
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
 
-            console.log("✅ Token set in cookie:", token);
+        console.log("✅ Token set in cookie:", token);
 
-            res.status(200).json({
-                message: "Login successful",
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role
-                }
-            });
-        } catch (error) {
-            res.status(500).json({ message: "Server error", error: error.message });
-        }
-    };
+        res.status(200).json({
+            message: "Login successful",
+            token, // Include token in the response body
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
 
     // Logout User
     export const logoutUser = async (req, res) => {
