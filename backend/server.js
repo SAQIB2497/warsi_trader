@@ -26,11 +26,12 @@ app.use(
             "http://localhost:5173",
             "https://warsi-trader.vercel.app"
         ],
+        credentials: true, // Allow cookies
         methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,  // Ensure cookies and authentication work
-        allowedHeaders: ["Content-Type", "Authorization"]
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+
 
 app.use(express.json());
 app.use(cookieParser());
