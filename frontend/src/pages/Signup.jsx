@@ -19,9 +19,11 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Add withCredentials: true to the request
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/users/register`,
-        userData
+        userData,
+        { withCredentials: true } // This is crucial for cookies
       );
       toast.success("Account registered successfully!");
       setUserData({ name: "", email: "", password: "" });

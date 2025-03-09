@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
           { withCredentials: true }
         );
 
+        // Directly use data if user object isn't nested
         setUser(data);
 
         // Fetch user's cart
@@ -53,11 +54,11 @@ export const AuthProvider = ({ children }) => {
         { email, password },
         { withCredentials: true }
       );
-      
-      // Correct response structure
-      setUser(data.user || data); // Handle both response formats
 
+      // Set user data directly from response
+      setUser(data);
 
+      // Handle cart merging
       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
       if (localCart.length > 0) {
         await axios.post(

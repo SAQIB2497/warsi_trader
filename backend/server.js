@@ -19,10 +19,15 @@ const PORT = process.env.PORT || 5000;
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Middleware
+app.set("trust proxy", 1); // Add this for railway deployment
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL,
-        credentials: true,
+        origin: [
+            process.env.FRONTEND_URL,
+            'https://warsitrader-production.up.railway.app' // Add your railway URL
+        ],
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true
     })
 );
 app.use(express.json());

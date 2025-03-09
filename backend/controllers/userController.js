@@ -47,23 +47,39 @@ export const loginUser = async (req, res) => {
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-        // Set the token in a cookie
-        // In loginUser controller
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Only HTTPS in production
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            domain: process.env.NODE_ENV === "production" ? ".railway.app" : undefined,
+            secure: true, // Always true for railway
+            sameSite: "none",
             path: "/",
+            domain: process.env.NODE_ENV === "production" ? ".railway.app" : "localhost",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
-        console.log("✅ Token set in cookie:", token); // Debugging
+        console.log("✅ Token set in cookie:", token);
 
         res.status(200).json({
             message: "Login successful",
             user: { id: user._id, name: user.name, email: user.email, role: user.role },
         });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+// Logout User
+export const logoutUser = async (req, res) => {
+    try {
+        res.cookie("token", "", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            path: "/",
+            domain: process.env.NODE_ENV === "production" ? ".railway.app" : "localhost",
+            expires: new Date(0)
+        });
+
+        res.status(200).json({ message: "Logout successful" });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -91,20 +107,5 @@ export const getCurrentUser = async (req, res) => {
         res.status(200).json(user);
     } catch (error) {
         res.status(401).json({ message: "Invalid token", error: error.message });
-    }
-};
-
-// Logout User
-export const logoutUser = async (req, res) => {
-    try {
-        // Clear the token cookie
-        res.cookie("token", "", {
-            httpOnly: true,
-            expires: new Date(0), // Set expiration to a past date
-        });
-
-        res.status(200).json({ message: "Logout successful" });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
