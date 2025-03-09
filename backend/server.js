@@ -14,12 +14,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Middleware
-app.set("trust proxy", 1); // Add this for railway deployment
+app.set("trust proxy", 1);
 app.use(
     cors({
         origin: [
@@ -33,15 +31,14 @@ app.use(
     })
 );
 
-
 app.use(express.json());
 app.use(cookieParser());
 
-// MongoDB Connection
+// Database Connection
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI);
-        console.log("✅ Connected to MongoDB Atlas");
+        console.log("✅ Connected to MongoDB");
     } catch (error) {
         console.error("❌ MongoDB connection error:", error);
         process.exit(1);
@@ -56,10 +53,6 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use('/api/payments', paymentRoutes);
 
-app.get("/", (req, res) => {
-    res.send("Backend is running successfully!");
-});
+app.get("/", (req, res) => res.send("Backend Running"));
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

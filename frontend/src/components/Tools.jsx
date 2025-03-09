@@ -8,32 +8,32 @@ const Tools = ({ tool }) => {
   const { user } = useAuth();
 
   const handleAddToCart = async () => {
-    if (user) {
-      try {
+    try {
+      if (user) {
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/cart/add`,
-          { productId: tool._id, quantity: 1 },
-          { withCredentials: true }
+          { productId: tool._id, quantity: 1 }
         );
 
-        const cartItems = response.data.items.map((item) => ({
-          ...item.productId,
-          quantity: item.quantity,
-          image: item.productId.image || [], // Ensure image array
-          _id: item.productId._id,
-        }));
-
-        dispatch(setCart(cartItems));
-      } catch (error) {
-        console.error("Error adding to cart:", error);
+        dispatch(
+          setCart(
+            response.data.items.map((item) => ({
+              ...item.productId,
+              quantity: item.quantity,
+              image: item.productId.image || [],
+            }))
+          )
+        );
+      } else {
+        dispatch(
+          addToCart({
+            ...tool,
+            image: Array.isArray(tool.image) ? tool.image : [tool.image],
+          })
+        );
       }
-    } else {
-      dispatch(
-        addToCart({
-          ...tool,
-          image: Array.isArray(tool.image) ? tool.image : [tool.image],
-        })
-      );
+    } catch (error) {
+      console.error("Cart error:", error.response?.data);
     }
   };
 

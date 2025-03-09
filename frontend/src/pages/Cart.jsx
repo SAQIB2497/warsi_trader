@@ -1,10 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import {
-  removeFromCart,
-  increaseQuantity,
-  decreaseQuantity,
-  setCart,
-} from "../redux/cartSlice";
+import { removeFromCart, setCart } from "../redux/cartSlice";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -13,60 +8,48 @@ const Cart = () => {
   const cart = useSelector((state) => state.cart.cart);
   const dispatch = useDispatch();
   const { user } = useAuth();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleRemove = async (productId) => {
-    if (user) {
-      try {
+    try {
+      if (user) {
         const response = await axios.delete(
-          `${import.meta.env.VITE_API_URL}/api/cart/remove/${productId}`,
-          { withCredentials: true }
+          `${import.meta.env.VITE_API_URL}/api/cart/remove/${productId}`
         );
-
-        const cartItems = response.data.items.map((item) => ({
-          ...item.productId,
-          quantity: item.quantity,
-          _id: item.productId._id,
-          image: item.productId.image || [], // Ensure image array exists
-        }));
-
-        dispatch(setCart(cartItems));
-      } catch (error) {
-        console.error("Error removing item:", error);
+        dispatch(
+          setCart(
+            response.data.items.map((item) => ({
+              ...item.productId,
+              quantity: item.quantity,
+            }))
+          )
+        );
+      } else {
+        dispatch(removeFromCart(productId));
       }
-    } else {
-      dispatch(removeFromCart(productId));
+    } catch (error) {
+      console.error("Remove error:", error.response?.data);
     }
   };
 
   const handleQuantityChange = async (productId, newQuantity) => {
-    if (newQuantity < 1) return; // Prevent negative quantities
-
-    if (user) {
-      try {
+    try {
+      if (user) {
         const response = await axios.put(
           `${import.meta.env.VITE_API_URL}/api/cart/update`,
-          { productId, quantity: newQuantity },
-          { withCredentials: true }
+          { productId, quantity: newQuantity }
         );
-
-        const cartItems = response.data.items.map((item) => ({
-          ...item.productId,
-          quantity: item.quantity,
-          _id: item.productId._id,
-          image: item.productId.image || [], // Ensure image array exists
-        }));
-
-        dispatch(setCart(cartItems));
-      } catch (error) {
-        console.error("Error updating quantity:", error);
+        dispatch(
+          setCart(
+            response.data.items.map((item) => ({
+              ...item.productId,
+              quantity: item.quantity,
+            }))
+          )
+        );
       }
-    } else {
-      if (newQuantity > 1) {
-        dispatch(decreaseQuantity(productId));
-      } else {
-        dispatch(increaseQuantity(productId));
-      }
+    } catch (error) {
+      console.error("Quantity error:", error.response?.data);
     }
   };
 
