@@ -49,13 +49,14 @@
             // Login controller
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production", // Ensure secure only in production
-                sameSite: "none", // Allow cross-site cookies
+                secure: true, // Always true in production
+                sameSite: "none",
                 path: "/",
+                // Remove domain specification for production
                 domain: process.env.NODE_ENV === "production"
-                    ? "warsitrader-production.up.railway.app"
-                    : "localhost", // Local development
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+                    ? undefined // Let browser handle domain
+                    : "localhost",
+                maxAge: 7 * 24 * 60 * 60 * 1000
             });
 
 
@@ -81,11 +82,11 @@
             res.cookie("token", "", {
                 httpOnly: true,
                 secure: true,
-                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+                sameSite: "none",
                 path: "/",
                 domain: process.env.NODE_ENV === "production"
-                    ? "warsitrader-production.up.railway.app"
-                    : undefined,
+                    ? undefined
+                    : "localhost",
                 expires: new Date(0)
             });
 
