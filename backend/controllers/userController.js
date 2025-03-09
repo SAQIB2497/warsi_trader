@@ -52,9 +52,8 @@
                 secure: true,
                 sameSite: "none",
                 path: "/",
-                // Remove domain for localhost
                 domain: process.env.NODE_ENV === "production"
-                    ? "warsitrader-production.up.railway.app"
+                    ? ".railway.app" // Allow all subdomains
                     : undefined,
                 maxAge: 7 * 24 * 60 * 60 * 1000
             });
@@ -63,7 +62,12 @@
 
             res.status(200).json({
                 message: "Login successful",
-                user: { id: user._id, name: user.name, email: user.email, role: user.role },
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                }
             });
         } catch (error) {
             res.status(500).json({ message: "Server error", error: error.message });
@@ -109,7 +113,12 @@
 
             if (!user) return res.status(404).json({ message: "User not found" });
 
-            res.status(200).json(user);
+            res.status(200).json({
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            });
         } catch (error) {
             res.status(401).json({ message: "Invalid token", error: error.message });
         }

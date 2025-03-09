@@ -12,38 +12,38 @@ export const AuthProvider = ({ children }) => {
 
   // Check authentication status on load
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/users/current`,
-          {
-            withCredentials: true, // This is sufficient
-          }
-        );
-        // Directly use data if user object isn't nested
-        setUser(data.user);
+   const checkAuth = async () => {
+     try {
+       const { data } = await axios.get(
+         `${import.meta.env.VITE_API_URL}/api/users/current`,
+         { withCredentials: true }
+       );
 
-        // Fetch user's cart
-        const cartRes = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/cart`,
-          { withCredentials: true }
-        );
+       // Verify response structure
+       console.log("Current user data:", data);
+       setUser(data);
 
-        dispatch(
-          setCart(
-            cartRes.data.items.map((item) => ({
-              ...item.productId,
-              quantity: item.quantity,
-              image: item.productId.image || [],
-            }))
-          )
-        );
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+       // Fetch user's cart
+       const cartRes = await axios.get(
+         `${import.meta.env.VITE_API_URL}/api/cart`,
+         { withCredentials: true }
+       );
+
+       dispatch(
+         setCart(
+           cartRes.data.items.map((item) => ({
+             ...item.productId,
+             quantity: item.quantity,
+             image: item.productId.image || [],
+           }))
+         )
+       );
+     } catch (error) {
+       setUser(null);
+     } finally {
+       setLoading(false);
+     }
+   };
     checkAuth();
   }, [dispatch]);
 
@@ -56,8 +56,8 @@ export const AuthProvider = ({ children }) => {
         { withCredentials: true }
       );
 
-      // Set user data directly from response
-      setUser(data);
+      // Fix: Access user data from response
+      setUser(data.user); // Changed from setUser(dat
 
       // Handle cart merging
       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
