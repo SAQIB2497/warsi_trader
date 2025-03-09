@@ -14,7 +14,7 @@ const Featured = () => {
         {/* Left Side - Image with Zoom Effect */}
         <div className="w-full md:w-1/2 flex justify-center overflow-hidden group">
           <img
-            src="public/Multifunctional.avif"
+            src="/Multifunctional.avif"
             alt="Product"
             className="w-full max-w-xs md:max-w-sm object-cover rounded-lg transition-transform duration-300 ease-in-out group-hover:scale-110"
           />

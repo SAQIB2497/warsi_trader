@@ -1,20 +1,20 @@
 const Brand = () => {
   // Sample brand data with image paths
   const brands = [
-    { id: 1, name: "Plasco", logo: "/public/Plasco.jpeg" },
-    { id: 2, name: "Adamjee DuraBuilt", logo: "/public/Adamjee.jpeg" },
-    { id: 3, name: "Popular Pipes", logo: "/public/PEL.jpg" },
-    { id: 4, name: "Sonex", logo: "/public/sonex.png" },
-    { id: 5, name: "Master Sanitary Fittings", logo: "/public/master.png" },
-    { id: 6, name: "PEL", logo: "/public/PEL.jpg" },
+    { id: 1, name: "Plasco", logo: "/Plasco.jpeg" },
+    { id: 2, name: "Adamjee DuraBuilt", logo: "/Adamjee.jpeg" },
+    { id: 3, name: "Popular Pipes", logo: "/PEL.jpg" },
+    { id: 4, name: "Sonex", logo: "/sonex.png" },
+    { id: 5, name: "Master Sanitary Fittings", logo: "/master.png" },
+    { id: 6, name: "PEL", logo: "/PEL.jpg" },
     {
       id: 7,
       name: "Schneider Electric Pakistan",
-      logo: "/public/schneider-electric.webp",
+      logo: "/schneider-electric.webp",
     },
-    { id: 8, name: "GFC Fans", logo: "/public/GFC.png" },
-    { id: 9, name: "Pak Fan", logo: "/public/PEL.jpg" },
-    { id: 10, name: "Khawaja Electric", logo: "/public/khawaja.jpeg" },
+    { id: 8, name: "GFC Fans", logo: "/GFC.png" },
+    { id: 9, name: "Pak Fan", logo: "/PEL.jpg" },
+    { id: 10, name: "Khawaja Electric", logo: "/khawaja.jpeg" },
   ];
 
   return (

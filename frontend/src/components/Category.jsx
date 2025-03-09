@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 const Category = () => {
   // Category Data
   const categories = [
-    { id: 1, name: "Hardware Tools", image: "public/HardwareTool.jpg" },
-    { id: 2, name: "Electric Tools", image: "public/ElectricTool.jpg" },
-    { id: 3, name: "Plumbing Tools", image: "public/PlumberingTools.webp" },
-    { id: 4, name: "Power Tools", image: "public/powerTool.jpg" },
-    { id: 5, name: "Safety Equipment", image: "public/Logo.jpg" },
+    { id: 1, name: "Hardware Tools", image: "/HardwareTool.jpg" },
+    { id: 2, name: "Electric Tools", image: "/ElectricTool.jpg" },
+    { id: 3, name: "Plumbing Tools", image: "/PlumberingTools.webp" },
+    { id: 4, name: "Power Tools", image: "/powerTool.jpg" },
+    { id: 5, name: "Safety Equipment", image: "/Logo.jpg" },
   ];
 
   return (

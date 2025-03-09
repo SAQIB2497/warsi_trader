@@ -8,7 +8,7 @@ const reviews = [
     product: "Total mini grinder and sander",
     review: "Great products, reached on time, satisfactory results",
     rating: 5,
-    image: "public/powerTool.jpg",
+    image: "/powerTool.jpg",
   },
   {
     id: 2,
@@ -16,7 +16,7 @@ const reviews = [
     product: "Harden 3pcs step drill bit set",
     review: "",
     rating: 5,
-    image: "public/Logo.jpg",
+    image: "/Logo.jpg",
   },
   {
     id: 3,
@@ -24,7 +24,7 @@ const reviews = [
     product: "Harden Double End Ring Spanner 1pc",
     review: "",
     rating: 5,
-    image: "public/ElectricTool.jpg",
+    image: "/ElectricTool.jpg",
   },
   {
     id: 4,
@@ -32,7 +32,7 @@ const reviews = [
     product: "Total mini grinder and sander",
     review: "Great products, reached on time, satisfactory results",
     rating: 5,
-    image: "public/powerTool.jpg",
+    image: "/powerTool.jpg",
   },
   {
     id: 5,
@@ -40,7 +40,7 @@ const reviews = [
     product: "Harden 3pcs step drill bit set",
     review: "",
     rating: 5,
-    image: "public/Logo.jpg",
+    image: "/Logo.jpg",
   },
   {
     id: 6,
@@ -48,7 +48,7 @@ const reviews = [
     product: "Harden Double End Ring Spanner 1pc",
     review: "",
     rating: 5,
-    image: "public/ElectricTool.jpg",
+    image: "/ElectricTool.jpg",
   },
 ];
 

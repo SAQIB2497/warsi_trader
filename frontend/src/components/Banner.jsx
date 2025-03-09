@@ -35,7 +35,7 @@ const Banner = () => {
         <SwiperSlide>
           <img
             className="w-full min-h-[250px] sm:min-h-[350px] md:min-h-[450px] object-cover"
-            src="public/Banner3.webp"
+            src="/Banner3.webp"
             alt="Banner3"
           />
         </SwiperSlide>
