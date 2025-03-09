@@ -46,15 +46,15 @@ export const loginUser = async (req, res) => {
         if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
-
+        // Login controller
         res.cookie("token", token, {
             httpOnly: true,
             secure: true,
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            sameSite: "none", // Force "none" for cross-origin
             path: "/",
             domain: process.env.NODE_ENV === "production"
-                ? "warsitrader-production.up.railway.app" // Exact production domain
-                : undefined, // Remove domain for localhost
+                ? "warsitrader-production.up.railway.app"
+                : "localhost", // Explicitly set for localhost
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 

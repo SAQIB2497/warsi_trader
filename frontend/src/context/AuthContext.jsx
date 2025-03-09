@@ -14,13 +14,15 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // In checkAuth function
         const { data } = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/users/current`,
           {
             withCredentials: true,
             headers: {
-              // Add this header for cookie transmission
               "Content-Type": "application/json",
+              // Add this to force credentials
+              Authorization: `Bearer ${token}`,
             },
           }
         );
