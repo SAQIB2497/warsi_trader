@@ -23,8 +23,8 @@ app.set("trust proxy", 1); // Add this for railway deployment
 app.use(
     cors({
         origin: [
-            process.env.FRONTEND_URL,
-            'https://warsitrader-production.up.railway.app' // Add your railway URL
+            "https://localhost:5173", // Exact HTTPS URL
+            "https://warsitrader-production.up.railway.app"
         ],
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
