@@ -18,38 +18,14 @@ export const AuthProvider = ({ children }) => {
     return config;
   });
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/users/current`,
-          { withCredentials: true }
-        );
-
-        if (data?.id) {
-          setUser(data);
-          const cartRes = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/cart`
-          );
-          dispatch(
-            setCart(
-              cartRes.data.items.map((item) => ({
-                ...item.productId,
-                quantity: item.quantity,
-                image: item.productId.image || [],
-              }))
-            )
-          );
-        }
-      } catch (error) {
-        localStorage.removeItem("authToken");
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkAuth();
-  }, [dispatch]);
+ useEffect(() => {
+   const interceptor = axios.interceptors.request.use((config) => {
+     const token = localStorage.getItem("authToken");
+     if (token) config.headers.Authorization = `Bearer ${token}`;
+     return config;
+   });
+   return () => axios.interceptors.request.eject(interceptor);
+ }, []);
 
   const login = async (email, password) => {
     try {

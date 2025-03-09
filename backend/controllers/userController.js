@@ -64,7 +64,7 @@ export const loginUser = async (req, res) => {
 
         res.status(200).json({
             message: "Login successful",
-            token, // Include token in the response body
+            token,
             user: {
                 id: user._id,
                 name: user.name,
@@ -81,17 +81,6 @@ export const loginUser = async (req, res) => {
     // Logout User
     export const logoutUser = async (req, res) => {
         try {
-            res.cookie("token", "", {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
-                path: "/",
-                domain: process.env.NODE_ENV === "production"
-                    ? undefined
-                    : "localhost",
-                expires: new Date(0)
-            });
-
             res.status(200).json({ message: "Logout successful" });
         } catch (error) {
             res.status(500).json({ message: "Server error", error: error.message });
@@ -99,31 +88,17 @@ export const loginUser = async (req, res) => {
     };
 
     // Get Current User
-    export const getCurrentUser = async (req, res) => {
-        try {
-            const token = req.cookies.token;
-
-            if (!token) return res.status(401).json({ message: "Not authenticated" });
-
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            console.log("🔵 Token expiry time:", new Date(decoded.exp * 1000)); // Debugging
-
-            if (decoded.exp < Date.now() / 1000) {
-                return res.status(401).json({ message: "Token expired" });
-            }
-
-            const user = await User.findById(decoded.id).select("-password");
-
-            if (!user) return res.status(404).json({ message: "User not found" });
-
-            res.status(200).json({
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            });
-        } catch (error) {
-            res.status(401).json({ message: "Invalid token", error: error.message });
-        }
-    };
+export const getCurrentUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.status(200).json({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
