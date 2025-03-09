@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { addToCart, setCart } from "../redux/cartSlice";
+import { addToCart } from "../redux/cartSlice";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
@@ -10,20 +10,10 @@ const Tools = ({ tool }) => {
   const handleAddToCart = async () => {
     try {
       if (user) {
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/cart/add`,
-          { productId: tool._id, quantity: 1 }
-        );
-
-        dispatch(
-          setCart(
-            response.data.items.map((item) => ({
-              ...item.productId,
-              quantity: item.quantity,
-              image: item.productId.image || [],
-            }))
-          )
-        );
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/cart/add`, {
+          productId: tool._id,
+          quantity: 1,
+        });
       } else {
         dispatch(
           addToCart({

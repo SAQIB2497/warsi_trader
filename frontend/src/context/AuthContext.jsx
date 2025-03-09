@@ -10,14 +10,41 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
+  // Axios interceptor setup
   useEffect(() => {
-    const interceptor = axios.interceptors.request.use((config) => {
+    const interceptor = axios.interceptors.request.use(config => {
       const token = localStorage.getItem("authToken");
       if (token) config.headers.Authorization = `Bearer ${token}`;
       return config;
     });
     return () => axios.interceptors.request.eject(interceptor);
   }, []);
+
+  // Initial auth check
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/users/current`
+        );
+        setUser(data);
+        
+        // Fetch user's cart
+        const cartRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart`);
+        dispatch(setCart(cartRes.data.items.map(item => ({
+          ...item.productId,
+          quantity: item.quantity,
+          image: item.productId.image || []
+        })));
+      } catch (error) {
+        localStorage.removeItem("authToken");
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, [dispatch]);
 
   const login = async (email, password) => {
     try {
@@ -30,33 +57,26 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("authToken", data.token);
       setUser(data.user);
 
-      // Cart merging logic
+      // Merge local cart with server cart
       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
       if (localCart.length > 0) {
         await axios.post(`${import.meta.env.VITE_API_URL}/api/cart/merge`, {
-          items: localCart.map((item) => ({
+          items: localCart.map(item => ({
             productId: item._id,
-            quantity: item.quantity,
-          })),
+            quantity: item.quantity
+          }))
         });
         localStorage.removeItem("cart");
       }
 
       // Fetch updated cart
-      const cartRes = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/cart`
-      );
-      dispatch(
-        setCart(
-          cartRes.data.items.map((item) => ({
-            ...item.productId,
-            quantity: item.quantity,
-            image: item.productId.image || [],
-          }))
-        )
-      );
+      const cartRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart`);
+      dispatch(setCart(cartRes.data.items.map(item => ({
+        ...item.productId,
+        quantity: item.quantity,
+        image: item.productId.image || []
+      })));
 
-      return data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "Login failed");
     } finally {
@@ -81,3 +101,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

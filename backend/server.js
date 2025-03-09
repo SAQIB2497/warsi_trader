@@ -22,12 +22,10 @@ app.use(
     cors({
         origin: [
             "http://localhost:5173",
-            "https://warsi-trader.vercel.app",
-            "https://warsi-trader-git-main-saqib-ur-rehmans-projects.vercel.app"
+            "https://warsi-trader.vercel.app"
         ],
-        credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
+        allowedHeaders: ["Content-Type", "Authorization"]
     })
 );
 

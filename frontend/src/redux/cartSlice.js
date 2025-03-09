@@ -1,14 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Load cart from localStorage
-const loadCartFromLocalStorage = () => {
-    const cart = localStorage.getItem("cart");
-    return cart ? JSON.parse(cart) : [];
-};
-
 const initialState = {
-    cart: loadCartFromLocalStorage(),
-    isLoading: false, // ✅ Added loading state
+    cart: [],
+    isLoading: false,
 };
 
 const cartSlice = createSlice({
@@ -16,28 +10,20 @@ const cartSlice = createSlice({
     initialState,
     reducers: {
         setCart: (state, action) => {
-            state.cart = action.payload.map(item => ({
-                ...item,
-                quantity: item.quantity || 1
-            }));
-            localStorage.setItem("cart", JSON.stringify(state.cart));
-            state.isLoading = false; // ✅ Stop loading
+            state.cart = action.payload;
+            state.isLoading = false;
         },
         addToCart: (state, action) => {
-            state.isLoading = true; // ✅ Start loading
-            const existingItem = state.cart.find((item) => item._id === action.payload._id);
+            const existingItem = state.cart.find(item => item._id === action.payload._id);
             if (existingItem) {
                 existingItem.quantity += 1;
             } else {
                 state.cart.push({ ...action.payload, quantity: 1 });
             }
-            localStorage.setItem("cart", JSON.stringify(state.cart));
-            state.isLoading = false; // ✅ Stop loading
+            state.isLoading = false;
         },
         removeFromCart: (state, action) => {
-            state.isLoading = true;
-            state.cart = state.cart.filter((item) => item._id !== action.payload);
-            localStorage.setItem("cart", JSON.stringify(state.cart));
+            state.cart = state.cart.filter(item => item._id !== action.payload);
             state.isLoading = false;
         },
         increaseQuantity: (state, action) => {
