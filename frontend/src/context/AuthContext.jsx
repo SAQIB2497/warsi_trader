@@ -16,7 +16,13 @@ export const AuthProvider = ({ children }) => {
       try {
         const { data } = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/users/current`,
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: {
+              // Add this header for cookie transmission
+              "Content-Type": "application/json",
+            },
+          }
         );
 
         // Directly use data if user object isn't nested

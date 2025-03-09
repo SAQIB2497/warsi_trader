@@ -53,7 +53,7 @@ export const loginUser = async (req, res) => {
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             path: "/",
             domain: process.env.NODE_ENV === "production"
-                ? "warsitrader-production.up.railway.app" // Exact domain
+                ? "warsitrader-production.up.railway.app" // Exact production domain
                 : undefined, // Remove domain for localhost
             maxAge: 7 * 24 * 60 * 60 * 1000
         });

@@ -23,11 +23,12 @@ app.set("trust proxy", 1); // Add this for railway deployment
 app.use(
     cors({
         origin: [
-            "https://localhost:5173", // Exact HTTPS URL
+            "https://localhost:5173", // Must be exact match
             "https://warsitrader-production.up.railway.app"
         ],
         methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true
+        credentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"]
     })
 );
 app.use(express.json());
