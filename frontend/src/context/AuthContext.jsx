@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   // Axios interceptor setup
   useEffect(() => {
-    const interceptor = axios.interceptors.request.use(config => {
+    const interceptor = axios.interceptors.request.use((config) => {
       const token = localStorage.getItem("authToken");
       if (token) config.headers.Authorization = `Bearer ${token}`;
       return config;
@@ -21,41 +21,43 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Initial auth check
-// Update the initial auth check useEffect
-useEffect(() => {
-  const checkAuth = async () => {
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          setLoading(false);
+          return;
+        }
 
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/users/current`
-      );
-      
-      setUser(data);
-      
-      // Fetch cart after successful auth check
-      const cartRes = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/cart`
-      );
-      dispatch(setCart(cartRes.data.items.map(item => ({
-        ...item.productId,
-        quantity: item.quantity,
-        image: item.productId.image || []
-      }))));
-      
-    } catch (error) {
-      localStorage.removeItem("authToken");
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-  checkAuth();
-}, [dispatch]);
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/users/current`
+        );
+
+        setUser(data);
+
+        // Fetch cart after successful auth check
+        const cartRes = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/cart`
+        );
+        dispatch(
+          setCart(
+            cartRes.data.items.map((item) => ({
+              ...item.productId,
+              quantity: item.quantity,
+              image: item.productId.image || [],
+            }))
+          )
+        );
+      } catch (error) {
+        localStorage.removeItem("authToken");
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, [dispatch]);
 
   const login = async (email, password) => {
     try {
@@ -72,22 +74,27 @@ useEffect(() => {
       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
       if (localCart.length > 0) {
         await axios.post(`${import.meta.env.VITE_API_URL}/api/cart/merge`, {
-          items: localCart.map(item => ({
+          items: localCart.map((item) => ({
             productId: item._id,
-            quantity: item.quantity
-          }))
+            quantity: item.quantity,
+          })),
         });
         localStorage.removeItem("cart");
       }
 
       // Fetch updated cart
-      const cartRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart`);
-      dispatch(setCart(cartRes.data.items.map(item => ({
-        ...item.productId,
-        quantity: item.quantity,
-        image: item.productId.image || []
-      })));
-
+      const cartRes = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/cart`
+      );
+      dispatch(
+        setCart(
+          cartRes.data.items.map((item) => ({
+            ...item.productId,
+            quantity: item.quantity,
+            image: item.productId.image || [],
+          }))
+        )
+      );
     } catch (error) {
       throw new Error(error.response?.data?.message || "Login failed");
     } finally {
