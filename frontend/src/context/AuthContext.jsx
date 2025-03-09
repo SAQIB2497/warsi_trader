@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
           }
         );
         // Directly use data if user object isn't nested
-        setUser(data);
+        setUser(data.user);
 
         // Fetch user's cart
         const cartRes = await axios.get(
