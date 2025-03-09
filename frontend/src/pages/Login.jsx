@@ -12,7 +12,6 @@ const handleSubmit = async (e) => {
   try {
     await login(credentials.email, credentials.password);
     toast.success("Login successful!");
-    // No need for delay with proper cookie handling
     navigate("/");
   } catch (error) {
     toast.error(error.message);
