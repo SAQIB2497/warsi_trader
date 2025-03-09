@@ -23,14 +23,15 @@ app.set("trust proxy", 1); // Add this for railway deployment
 app.use(
     cors({
         origin: [
-            "https://localhost:5173",
-            "https://warsi-trader.vercel.app/"
+            "http://localhost:5173",
+            "https://warsi-trader.vercel.app"
         ],
         methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,
-        exposedHeaders: ["set-cookie"]
+        credentials: true,  // Ensure cookies and authentication work
+        allowedHeaders: ["Content-Type", "Authorization"]
     })
 );
+
 app.use(express.json());
 app.use(cookieParser());
 
