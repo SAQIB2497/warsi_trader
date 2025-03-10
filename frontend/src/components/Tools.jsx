@@ -10,10 +10,23 @@ const Tools = ({ tool }) => {
   const handleAddToCart = async () => {
     try {
       if (user) {
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/cart/add`, {
-          productId: tool._id,
-          quantity: 1,
-        });
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/cart/add`,
+          {
+            productId: tool._id,
+            quantity: 1,
+          }
+        );
+
+        // Update Redux store with latest cart from the backend
+        dispatch(
+          setCart(
+            response.data.items.map((item) => ({
+              ...item.productId,
+              quantity: item.quantity,
+            }))
+          )
+        );
       } else {
         dispatch(
           addToCart({
@@ -26,6 +39,7 @@ const Tools = ({ tool }) => {
       console.error("Cart error:", error.response?.data);
     }
   };
+
 
   return (
     <div className="relative bg-white shadow-lg rounded-xl overflow-hidden p-4 transition-all duration-300 transform hover:scale-105 hover:shadow-xl border border-gray-200 w-64">
