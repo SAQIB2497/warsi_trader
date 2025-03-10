@@ -20,14 +20,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 app.set("trust proxy", 1);
 app.use(
     cors({
-        origin: [
-            "https://warsi-trader.vercel.app",
-            "https://warsitrader-production.up.railway.app"
-        ],
+        origin: "https://warsi-trader.vercel.app",
         methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true, // ✅ This is important!
         allowedHeaders: ["Content-Type", "Authorization"]
     })
 );
+
 
 // Add this after CORS setup
 app.use((req, res, next) => {
