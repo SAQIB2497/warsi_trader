@@ -45,10 +45,10 @@ export const getProducts = async (req, res) => {
             data: products
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(500).json({ 
             success: false,
             message: "Server error",
-            error: error.message
+            error: error.message 
         });
     }
 };

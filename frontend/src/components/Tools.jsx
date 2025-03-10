@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/cartSlice";
+import { addToCart, setCart } from "../redux/cartSlice";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 

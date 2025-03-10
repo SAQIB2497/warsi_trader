@@ -11,8 +11,8 @@ const API = axios.create({
 
 
 export const getProducts = async () => {
-    const response = await API.get("/allproducts"); // Keep original endpoint
-    return response.data;
+    const response = await API.get("/allproducts");
+    return response.data.data; // Extracting `data` array from API response
 };
 
 export const addProduct = async (productData) => {

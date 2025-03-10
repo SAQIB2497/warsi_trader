@@ -10,12 +10,9 @@ const AllTools = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Fetch tools from the backend
     const fetchTools = async () => {
       try {
-        const response = await getProducts();
-        const products = response.data || []; // Handle new response structure
-
+        const products = await getProducts(); // This now directly gets `data`
         const updatedTools = products.map((tool) => ({
           ...tool,
           discount:
@@ -36,6 +33,7 @@ const AllTools = () => {
 
     fetchTools();
   }, []);
+
 
   if (loading)
     return <p className="text-center text-gray-600">Loading products...</p>;
