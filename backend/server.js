@@ -22,7 +22,7 @@ app.use(
     cors({
         origin: "https://warsi-trader.vercel.app",
         methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true, // ✅ This is important!
+        credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"]
     })
 );

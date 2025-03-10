@@ -3,6 +3,9 @@ import { useDispatch } from "react-redux";
 import { setCart, clearCart } from "../redux/cartSlice";
 import axios from "axios";
 
+// Set axios to send credentials (cookies, headers, etc.)
+axios.defaults.withCredentials = true;
+
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -10,17 +13,19 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-  // Axios interceptor setup
+  // Axios interceptor to attach the token to every request
   useEffect(() => {
     const interceptor = axios.interceptors.request.use((config) => {
       const token = localStorage.getItem("authToken");
-      if (token) config.headers.Authorization = `Bearer ${token}`;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
       return config;
     });
     return () => axios.interceptors.request.eject(interceptor);
   }, []);
 
-  // Initial auth check
+  // Initial authentication check
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -29,13 +34,10 @@ export const AuthProvider = ({ children }) => {
           setLoading(false);
           return;
         }
-
         const { data } = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/users/current`
         );
-
         setUser(data);
-
         // Fetch cart after successful auth check
         const cartRes = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/cart`
@@ -50,6 +52,7 @@ export const AuthProvider = ({ children }) => {
           )
         );
       } catch (error) {
+        console.error("Auth check error:", error);
         localStorage.removeItem("authToken");
         setUser(null);
       } finally {
@@ -66,11 +69,10 @@ export const AuthProvider = ({ children }) => {
         `${import.meta.env.VITE_API_URL}/api/users/login`,
         { email, password }
       );
-
       localStorage.setItem("authToken", data.token);
       setUser(data.user);
 
-      // Merge local cart with server cart
+      // Merge local cart with server cart if available
       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
       if (localCart.length > 0) {
         await axios.post(`${import.meta.env.VITE_API_URL}/api/cart/merge`, {
@@ -96,7 +98,10 @@ export const AuthProvider = ({ children }) => {
         )
       );
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Login failed");
+      console.error("Login error:", error);
+      throw new Error(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
