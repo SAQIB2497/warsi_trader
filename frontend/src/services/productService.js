@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: `${import.meta.env.VITE_API_URL}/api/products`,
+    baseURL: `${import.meta.env.VITE_API_URL}/api/products`, // Keep this as-is
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
@@ -9,8 +9,9 @@ const API = axios.create({
     }
 });
 
+
 export const getProducts = async () => {
-    const response = await API.get("/allproducts");
+    const response = await API.get("/allproducts"); // Keep original endpoint
     return response.data;
 };
 

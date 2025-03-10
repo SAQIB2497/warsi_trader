@@ -13,23 +13,23 @@ const AllTools = () => {
     // Fetch tools from the backend
     const fetchTools = async () => {
       try {
-        const data = await getProducts();
+        const response = await getProducts();
+        const products = response.data || []; // Handle new response structure
 
-        // Ensure data structure and calculate discount
-        const updatedTools = data.map((tool) => ({
+        const updatedTools = products.map((tool) => ({
           ...tool,
           discount:
             tool.price && tool.discountPrice
               ? Math.round(
                   ((tool.price - tool.discountPrice) / tool.price) * 100
                 )
-              : null, // Show nothing if no discount
+              : null,
         }));
 
         setTools(updatedTools);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        setError(err?.message || "An error occurred");
         setLoading(false);
       }
     };
