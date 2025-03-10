@@ -18,9 +18,15 @@ const AllTools = () => {
         if (!Array.isArray(products)) {
           throw new Error("Received invalid products data");
         }
-
+        
         const updatedTools = products.map((tool) => ({
-          // ... rest of your mapping logic
+          ...tool,
+          discount:
+            tool.price && tool.discountPrice
+              ? Math.round(
+                  ((tool.price - tool.discountPrice) / tool.price) * 100
+                )
+              : null,
         }));
 
         setTools(updatedTools);
