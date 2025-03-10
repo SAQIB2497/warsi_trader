@@ -36,19 +36,20 @@ export const createProduct = async (req, res) => {
 };
 
 // Get All Products
+// Get All Products (Ensure response structure matches)
 export const getProducts = async (req, res) => {
     try {
         const products = await Product.find();
         res.status(200).json({
             success: true,
             count: products.length,
-            data: products
+            data: products // <-- Ensure array is in "data" property
         });
     } catch (error) {
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
             message: "Server error",
-            error: error.message 
+            error: error.message
         });
     }
 };

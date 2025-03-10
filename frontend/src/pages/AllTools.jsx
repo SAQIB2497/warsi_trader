@@ -12,15 +12,15 @@ const AllTools = () => {
 
     const fetchTools = async () => {
       try {
-        const products = await getProducts(); // This now directly gets `data`
+        const products = await getProducts();
+
+        // Add array safety check
+        if (!Array.isArray(products)) {
+          throw new Error("Received invalid products data");
+        }
+
         const updatedTools = products.map((tool) => ({
-          ...tool,
-          discount:
-            tool.price && tool.discountPrice
-              ? Math.round(
-                  ((tool.price - tool.discountPrice) / tool.price) * 100
-                )
-              : null,
+          // ... rest of your mapping logic
         }));
 
         setTools(updatedTools);

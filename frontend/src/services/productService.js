@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: `${import.meta.env.VITE_API_URL}/api/products`, // Keep this as-is
+    baseURL: `${import.meta.env.VITE_API_URL}/api/products`,
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
@@ -11,8 +11,16 @@ const API = axios.create({
 
 
 export const getProducts = async () => {
-    const response = await API.get("/allproducts");
-    return response.data.data; // Extracting `data` array from API response
+    try {
+        const response = await API.get("/allproducts");
+        console.log('API Response:', response.data); // For debugging
+
+        // Handle both possible response structures
+        return response.data.data || response.data;
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        return [];
+    }
 };
 
 export const addProduct = async (productData) => {
