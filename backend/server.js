@@ -20,7 +20,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 app.set("trust proxy", 1);
 app.use(
     cors({
-        origin: "https://warsi-trader.vercel.app",
+        origin: [
+            "https://warsi-trader.vercel.app",
+            "http://localhost:5173" // For localhost for testing
+        ],
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"]
@@ -42,6 +45,9 @@ const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log("✅ Connected to MongoDB");
+        // Verify products exist
+        const products = await mongoose.connection.db.collection('products').find({}).toArray();
+        console.log(`📦 Found ${products.length} products in database`);
     } catch (error) {
         console.error("❌ MongoDB connection error:", error);
         process.exit(1);

@@ -12,13 +12,19 @@ const AllTools = () => {
 
     const fetchTools = async () => {
       try {
+        console.log(
+          "Fetching from:",
+          `${import.meta.env.VITE_API_URL}/api/products/allproducts`
+        );
         const products = await getProducts();
 
-        // Add array safety check
-        if (!Array.isArray(products)) {
-          throw new Error("Received invalid products data");
-        }
-        
+       console.log("Raw products data:", products);
+       if (!products) throw new Error("No products received");
+       if (!Array.isArray(products)) {
+         console.error("Invalid data format:", typeof products);
+         throw new Error("Server returned non-array response");
+       }
+
         const updatedTools = products.map((tool) => ({
           ...tool,
           discount:
